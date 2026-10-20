@@ -1,0 +1,10 @@
+{
+  // Cloudflare Workers static-assets deployment for BuildMe.
+  // Deploy: npx wrangler login && npm run deploy   →  https://buildme.<your-subdomain>.workers.dev
+  "name": "buildme",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "single-page-application"
+  }
+}

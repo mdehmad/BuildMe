@@ -1,0 +1,13 @@
+BuildMe loads the following third-party libraries at runtime from public CDNs.
+They are not redistributed in this repository and remain under their own licences.
+
+- three.js r128 (core, OrbitControls, GLTFExporter) — MIT License — https://github.com/mrdoob/three.js
+- jsPDF 2.5.1 — MIT License — https://github.com/parallax/jsPDF
+- JSZip 3.10.1 — MIT License or GPLv3 (dual) — https://github.com/Stuk/jszip
+- Google Fonts: Barlow Condensed, IBM Plex Sans, IBM Plex Mono — SIL Open Font License 1.1
+
+Reference material (not included):
+- CDA Islamabad Residential Sectors Zoning (Building Control) Regulation 1993 —
+  https://www.cda.gov.pk/public/Assets/pdf/1699885249_b05cb0e0_abed_43cf_8916_685822960e8d_.pdf
+- Hu et al., "Graph2Plan: Learning Floorplan Generation from Layout Graphs", ACM TOG 2020 —
+  https://arxiv.org/abs/2004.13204
