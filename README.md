@@ -54,7 +54,7 @@ npx wrangler login     # opens the browser once to authorise your Cloudflare acc
 npm run deploy         # builds and deploys → https://buildme.<your-subdomain>.workers.dev
 ```
 
-**From GitHub (automatic on every push to `main`):** add two repository secrets, `CLOUDFLARE_API_TOKEN` (a token with the *Edit Cloudflare Workers* template) and `CLOUDFLARE_ACCOUNT_ID`. `.github/workflows/deploy-cloudflare.yml` then tests, builds and deploys.
+**Live site:** https://buildme-ail.pages.dev (Cloudflare Pages, direct upload). To publish an update, run `npm run build` and upload the `dist/` folder (or a zip of it) as a new deployment of the `buildme` Pages project in the Cloudflare dashboard.
 
 **Without any tools:** in the Cloudflare dashboard, go to *Workers & Pages → Create → Pages → Upload assets*, name the project `buildme`, and drop in the `dist` folder.
 
