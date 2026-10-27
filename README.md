@@ -15,12 +15,16 @@
 | **Plot sizes** | One ready plan for every standard plot, from 4 Marla to 2 Kanal. |
 | **Cost estimator** | A quick budget for any plot, number of floors, style and covered area, at three finish levels. |
 | **CDA bylaws** | The rules BuildMe applies and where they come from. |
+| **Help & FAQ** | Searchable answers about plots, bylaws, layouts, costs and files, grouped by topic, plus a table of how many bedrooms fit on each plot. |
+
+**Mimar**, BuildMe's cartoon architect guide, sits in the corner of every screen with tips for that screen. When a brief can't be designed, he explains which row didn't fit and offers one-click fixes (double storey, one bedroom fewer, no drawing room…). When BuildMe adjusts a brief to make it fit, a note says what changed and why. Most screens also have a **Quick answers** panel.
 
 ![Workspace](docs/images/workspace.png)
 
 ## What's inside
 
 - **CDA bylaw engine.** Implements the *Islamabad Residential Sectors Zoning (Building Control) Regulation 1993*: Schedule A setbacks, coverage, FAR and storeys, Schedule B stair tower, cl. 10 servant room, cl. 12.06 car porch, and Annex 1 minimum room sizes. Rear open space follows current practice: 5 ft up to 5 marla, 7 ft below 1 kanal, 10 ft from 1 kanal. Details in [docs/bylaws.md](docs/bylaws.md).
+- **Always a plan when one is possible.** If the full brief doesn't fit, BuildMe relaxes it gently, in a fixed order: move a bedroom between floors, then dressing rooms, separate dining, drawing room, second car, optional servant room, and bedrooms last. It ranks every attempt against the original brief and lists each change. A typology sweep (`tests/typologies.test.mjs`) checks every standard plot, single and double storey, with 2, 4 and 6 bedrooms.
 - **Deterministic layouts.** A plan is realised from an editable scheme: the rooms in each row, and how deep each row is. The same scheme always gives the same plan. Edits that would break a bylaw or leave a room unreachable are refused with a reason.
 - **Design assistant.** Rule-based throughout. It reads a plain-language brief, then suggests improvements for each layout: unused floor area, rooms without windows, sun orientation by road side, bylaw notes.
 - **3D and styles.** A live three.js model built from the plan, in seven styles: Massing, Modern, Contemporary, Spanish, Minimalist, French and Industrial.
@@ -38,7 +42,7 @@
 
 ```bash
 npm run build     # → dist/index.html + dist/favicon.svg (the whole app)
-npm test          # engine tests: every standard plot must pass the CDA bylaw check
+npm test          # engine + typology tests: every plot, floors and bedroom count must give a CDA-compliant plan
 npx serve dist    # or open dist/index.html directly
 ```
 
@@ -68,10 +72,11 @@ src/
   render.js      SVG plans, roof plan, bubble diagram
   model3d.js     three.js massing model, elevation styles, renders, GLB export
   export.js      cost model, DXF writer, PDF report, print palette
+  help.js        Mimar (SVG guide), FAQ library, quick-answer cards, Help page, animated pop-ups and toasts
   app.js         app shell: dashboard, brief parser, questions, workspace, projects, tools, downloads
   template.html  markup and design system; the build inlines the scripts
 scripts/build.mjs   builds dist/ (and artifact/ for claude.ai)
-tests/engine.test.mjs
+tests/engine.test.mjs, tests/typologies.test.mjs
 wrangler.jsonc      Cloudflare deployment
 docs/               bylaws, architecture, screenshots
 ```
