@@ -221,7 +221,8 @@ details.regs[open] summary::after{content:"–"}
 .regs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;padding:0 12px 12px}
 .regs-grid label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
 .regs-note{grid-column:1/-1;font-size:12px;color:var(--muted);margin:0}
-.working{display:flex;align-items:center;gap:12px;color:var(--muted);padding:22px 26px}
+.working{display:flex;align-items:center;gap:14px;color:var(--muted);padding:18px 24px}
+.working .w-mm{width:64px;height:80px;flex:0 0 auto}.working .w-mm svg{width:100%;height:100%}.working b{display:block;color:var(--ink);font-size:15px}
 .spinner{width:22px;height:22px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--primary)}
 @media (prefers-reduced-motion:no-preference){.spinner{animation:spin .8s linear infinite}}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -388,6 +389,195 @@ details.regs[open] summary::after{content:"–"}
 .pipeline small{color:var(--muted);font-size:11.5px}
 .pipeline p{margin:6px 0 0;font-size:13px}
 @media (prefers-reduced-motion:no-preference){.btn,.choice,.opt,.proj-card,.nav button{transition:background-color .15s,border-color .15s,box-shadow .15s}}
+
+/* ===== Mimar (guide), quick answers, help page, pop-ups ===== */
+.mm{display:block;overflow:visible}
+.mm .mm-m,.mm .mm-sweat,.mm .mm-bulb,.mm .mm-q{display:none}
+.mm.mood-happy .mm-m-happy,.mm.mood-wave .mm-m-happy,.mm.mood-idea .mm-m-happy{display:inline}
+.mm.mood-oops .mm-m-oops,.mm.mood-oops .mm-sweat{display:inline}
+.mm.mood-think .mm-m-think,.mm.mood-think .mm-q{display:inline}
+.mm.mood-idea .mm-bulb{display:inline}
+.mm .mm-eyes,.mm .mm-arm,.mm .mm-head,.mm .mm-bob,.mm .mm-brows path,.mm .mm-sweat,.mm .mm-bulb,.mm .mm-hat,.mm .mm-pencil{transform-box:fill-box}
+.mm .mm-eyes{transform-origin:center}
+.mm .mm-arm{transform-origin:85% 70%}
+.mm .mm-head{transform-origin:50% 90%}
+.mm .mm-hat{transform-origin:50% 100%}
+.mm.mood-oops .mm-brows .b1{transform:translate(0,-2.5px) rotate(-12deg);transform-origin:center}
+.mm.mood-oops .mm-brows .b2{transform:translate(0,-2.5px) rotate(12deg);transform-origin:center}
+.mm.mood-think .mm-brows .b2{transform:translate(0,-2px) rotate(8deg);transform-origin:center}
+@media (prefers-reduced-motion:no-preference){
+  .mm .mm-bob{animation:mm-bob 2.8s ease-in-out infinite}
+  .mm .mm-eyes{animation:mm-blink 4.6s infinite}
+  .mm.mood-wave .mm-arm{animation:mm-wave 1.1s ease-in-out 3}
+  .mm.mood-idea .mm-bulb{animation:mm-glow 1.4s ease-in-out infinite;transform-origin:center}
+  .mm.mood-think .mm-pencil{animation:mm-tap .7s ease-in-out infinite;transform-origin:50% 100%}
+  .mm.mood-think .mm-q{animation:mm-float 2s ease-in-out infinite}
+  .mm.mood-oops .mm-head{animation:mm-shake .5s ease-in-out 3}
+  .mm.mood-oops .mm-hat{animation:mm-hat 1.8s ease-in-out infinite}
+  .mm.mood-oops .mm-sweat{animation:mm-sweat 1.6s ease-in infinite}
+  .mm.mood-happy .mm-head{animation:mm-nod 3.2s ease-in-out infinite}
+}
+@keyframes mm-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes mm-blink{0%,93%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@keyframes mm-wave{0%,100%{transform:rotate(0)}30%{transform:rotate(22deg)}65%{transform:rotate(-8deg)}}
+@keyframes mm-glow{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.12);opacity:.85}}
+@keyframes mm-tap{0%,100%{transform:rotate(0)}50%{transform:rotate(-14deg)}}
+@keyframes mm-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes mm-shake{0%,100%{transform:rotate(0)}25%{transform:rotate(-7deg)}75%{transform:rotate(7deg)}}
+@keyframes mm-hat{0%,100%{transform:rotate(0) translateY(0)}20%{transform:rotate(-6deg) translateY(-3px)}40%{transform:rotate(3deg) translateY(0)}}
+@keyframes mm-sweat{0%{transform:translateY(-2px);opacity:0}20%{opacity:1}100%{transform:translateY(14px);opacity:0}}
+@keyframes mm-nod{0%,100%{transform:rotate(0)}50%{transform:rotate(3deg)}}
+@keyframes mm-timer{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+
+.mimar{position:fixed;right:18px;bottom:18px;z-index:40;display:flex;align-items:flex-end;gap:8px;pointer-events:none;transition:opacity .25s,transform .25s}
+.mimar.away{opacity:0;transform:translateY(20px);pointer-events:none!important}
+.mimar > *{pointer-events:auto}
+.mm-avatar{width:86px;height:104px;border:0;background:none;padding:0;cursor:pointer;position:relative;flex:0 0 auto;filter:drop-shadow(0 6px 10px rgba(15,42,67,.18))}
+.mm-avatar svg{width:100%;height:100%}
+.mm-avatar.poke{animation:mm-poke .45s ease}
+@keyframes mm-poke{30%{transform:scale(1.1) rotate(-4deg)}60%{transform:scale(.95) rotate(3deg)}}
+.mm-badge{position:absolute;top:8px;right:4px;background:var(--bad);color:#fff;font:700 11px/18px var(--body);min-width:18px;height:18px;border-radius:9px;text-align:center;box-shadow:0 0 0 2px #fff}
+.mm-bubble{width:min(320px,calc(100vw - 130px));background:var(--surface);border:1px solid var(--line);border-radius:16px 16px 4px 16px;box-shadow:0 14px 34px rgba(15,42,67,.16);padding:12px 14px 0;display:flex;flex-direction:column;gap:8px;margin-bottom:56px;overflow:hidden;transform-origin:100% 100%}
+.mm-bubble.pop{animation:mm-pop .35s cubic-bezier(.3,1.5,.6,1)}
+@keyframes mm-pop{from{transform:scale(.85);opacity:.4}to{transform:scale(1);opacity:1}}
+.mimar[data-state="min"] .mm-bubble{display:none}
+.mimar[data-state="min"] .mm-avatar{width:64px;height:78px}
+.mm-top{display:flex;align-items:center;gap:6px}
+.mm-top .grow{flex:1}
+.mm-kicker{font:600 11px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--primary)}
+.mm-x{border:0;background:none;width:26px;height:26px;border-radius:7px;cursor:pointer;display:grid;place-items:center;color:var(--muted)}
+.mm-x:hover{background:var(--line-2)}
+.mm-x svg,.oops-x svg,.t-x svg{width:16px;height:16px;stroke:currentColor;stroke-width:2.2;fill:none;stroke-linecap:round}
+.mm-text{margin:0;font-size:14px;line-height:1.45;color:var(--ink);min-height:2.9em}
+.mm-answer{font-size:13px;color:var(--ink-2);background:var(--primary-softer);border:1px solid var(--sky-2);border-radius:10px;padding:9px 11px;max-height:240px;overflow:auto;display:flex;flex-direction:column;gap:5px}
+.mm-answer .faq-tbl{font-size:12px}
+.mm-acts{display:flex;gap:4px;flex-wrap:wrap;align-items:center}
+.mm-acts .btn{text-decoration:none}
+.mm-timer{height:3px;margin:4px -14px 0;background:var(--line-2)}
+.mm-timer i{display:block;height:100%;background:var(--sky);transform-origin:left}
+.mimar.paused .mm-timer i{animation-play-state:paused!important}
+@media (max-width:640px){.mimar{right:10px;bottom:10px}.mm-bubble{margin-bottom:46px}.mm-avatar{width:70px;height:86px}}
+@media print{.mimar,.toasts,.oops-back{display:none!important}}
+
+/* quick answers */
+.quick-faq{display:flex;flex-direction:column;gap:10px}
+.qf-head{display:flex;align-items:center;gap:10px}
+.qf-head > div{flex:1;min-width:0}
+.qf-face{width:40px;height:46px;flex:0 0 auto;background:var(--primary-soft);border-radius:12px;display:grid;place-items:end center;overflow:hidden}
+.qf-face svg{width:40px;height:50px;margin-bottom:-6px}
+.qf-list{display:flex;flex-direction:column;gap:6px}
+@media (prefers-reduced-motion:no-preference){.qf-list.in .faq-item{animation:qf-in .35s ease both}.qf-list.in .faq-item:nth-child(2){animation-delay:.05s}.qf-list.in .faq-item:nth-child(3){animation-delay:.1s}.qf-list.in .faq-item:nth-child(4){animation-delay:.15s}}
+@keyframes qf-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.faq-item{border:1px solid var(--line);border-radius:10px;background:var(--surface-2)}
+.faq-item summary{cursor:pointer;list-style:none;padding:9px 34px 9px 12px;font-weight:600;font-size:13.5px;position:relative;color:var(--ink)}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary::after{content:"";position:absolute;right:13px;top:50%;width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:translateY(-70%) rotate(45deg);transition:transform .2s}
+.faq-item[open] summary::after{transform:translateY(-30%) rotate(-135deg)}
+.faq-item[open]{background:var(--surface);border-color:var(--sky-2)}
+.faq-a{padding:0 12px 11px;font-size:13.5px;color:var(--ink-2);display:flex;flex-direction:column;gap:6px}
+.faq-item.flash{box-shadow:0 0 0 3px var(--sky-2)}
+.faq-tbl td,.faq-tbl th{padding:5px 8px}
+.wiz-layout{display:grid;grid-template-columns:minmax(0,820px) 300px;gap:20px;justify-content:center;align-items:start}
+.wiz-layout .wiz{margin:0}
+.wiz-aside{position:sticky;top:84px}
+@media (max-width:1240px){.wiz-layout{grid-template-columns:minmax(0,820px)}.wiz-aside{position:static}}
+.page-split{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px;align-items:start}
+.page-split > aside{position:sticky;top:84px}
+@media (max-width:1100px){.page-split{grid-template-columns:minmax(0,1fr)}.page-split > aside{position:static}}
+.dash-help .qf-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;align-items:start}
+@media (max-width:800px){.dash-help .qf-list{grid-template-columns:minmax(0,1fr)}}
+
+/* help page */
+.help-hero{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);overflow:hidden;background:linear-gradient(135deg,#EAF3FF 0%,#FFFFFF 65%)}
+.help-hero-main{padding:24px 26px;display:flex;flex-direction:column;gap:12px}
+.help-hero h2{font-size:28px}
+.help-hero p{margin:0;color:var(--ink-2);max-width:56ch}
+.help-hero-art{position:relative;display:flex;align-items:flex-end;justify-content:center;padding:18px 18px 0;cursor:pointer;min-height:220px}
+.help-hero-art .mm{width:170px;height:212px}
+.help-speech{position:absolute;top:22px;right:200px;max-width:250px;background:#fff;border:1px solid var(--line);border-radius:14px 14px 14px 4px;padding:9px 12px;font-size:13px;box-shadow:var(--shadow)}
+.help-speech.pop{animation:mm-pop .35s cubic-bezier(.3,1.5,.6,1)}
+@media (max-width:800px){.help-hero{grid-template-columns:minmax(0,1fr)}.help-hero-art{min-height:170px}.help-hero-art .mm{width:120px;height:150px}.help-speech{right:auto;left:12px;max-width:60%}}
+.help-search{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px 12px}
+.help-search:focus-within{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft)}
+.help-search svg{width:18px;height:18px;stroke:var(--muted);fill:none;stroke-width:2;stroke-linecap:round;flex:0 0 auto}
+.help-search input{border:0!important;box-shadow:none!important;padding:8px 0;background:transparent}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:5px 12px;font-size:13px;font-weight:600;color:var(--ink-2);cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--primary);border-color:var(--primary);color:#fff}
+.help-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;align-items:start}
+@media (max-width:1100px){.help-grid{grid-template-columns:minmax(0,1fr)}}
+.help-side{display:flex;flex-direction:column;gap:16px;position:sticky;top:84px}
+@media (max-width:1100px){.help-side{position:static}}
+.faq-list{display:flex;flex-direction:column;gap:18px}
+.faq-group{display:flex;flex-direction:column;gap:7px}
+.faq-group h3{font-size:15px;color:var(--primary-2)}
+.faq-list .faq-item{background:var(--surface)}
+.faq-list .faq-item summary{font-size:14.5px;padding:12px 38px 12px 14px}
+.faq-list .faq-a{font-size:14px;padding:0 14px 13px}
+@media (prefers-reduced-motion:no-preference){.faq-group .faq-item{animation:qf-in .3s ease both;animation-delay:calc(var(--i,0) * 30ms)}}
+.faq-list .empty-state .mm{width:70px;height:88px;margin:0 auto 6px}
+.tip-of-day p{margin:6px 0 10px;font-size:14px}
+
+/* pop-up */
+.oops-back{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:16px;background:rgba(15,42,67,0);backdrop-filter:blur(0);transition:background .25s,backdrop-filter .25s;overflow:auto}
+.oops-back.in{background:rgba(15,42,67,.38);backdrop-filter:blur(3px)}
+.oops-card{position:relative;width:min(560px,100%);background:var(--surface);border-radius:20px;box-shadow:0 24px 60px rgba(15,42,67,.28);overflow:hidden;opacity:0;transform:translateY(30px) scale(.85) rotate(-2deg)}
+.oops-back.in .oops-card{animation:oops-in .6s cubic-bezier(.2,1.4,.4,1) forwards,oops-shake .45s ease .62s 1}
+.oops-back.out .oops-card{opacity:0;transform:scale(.92) translateY(10px);transition:all .22s}
+@keyframes oops-in{0%{opacity:0;transform:translateY(40px) scale(.8) rotate(-3deg)}60%{opacity:1;transform:translateY(-6px) scale(1.03) rotate(.6deg)}100%{opacity:1;transform:none}}
+@keyframes oops-shake{0%,100%{transform:none}20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(2px)}}
+.oops-back.info .oops-card{animation:oops-in .55s cubic-bezier(.2,1.4,.4,1) forwards}
+.oops-x{position:absolute;top:10px;right:10px;z-index:2;width:34px;height:34px;border-radius:10px;border:0;background:rgba(255,255,255,.85);cursor:pointer;display:grid;place-items:center;color:var(--ink-2)}
+.oops-x:hover{background:#fff}
+.oops-stage{position:relative;height:150px;background:linear-gradient(180deg,#FDECEA 0%,#FFF6F4 100%);display:flex;align-items:flex-end;justify-content:center;gap:4px;overflow:hidden}
+.oops-back.info .oops-stage{background:linear-gradient(180deg,#E3EFFE 0%,#F4F9FF 100%);height:130px}
+.oops-house{width:230px;height:150px;margin-right:-40px}
+.oops-house .blk rect{fill:#fff;stroke:#1E6FD9;stroke-width:2}
+.oops-house .blk.odd rect{fill:#FCE9E7;stroke:var(--bad)}
+.oops-house .blk.odd text{font:700 15px var(--display);fill:var(--bad)}
+.oops-house .blk{transform-box:fill-box;transform-origin:50% 100%}
+.oops-mm{width:110px;height:136px;margin-bottom:-4px;position:relative;z-index:1}
+.oops-mm .mm{width:100%;height:100%}
+@media (prefers-reduced-motion:no-preference){
+  .oops-back.in .blk{animation:blk-drop .45s cubic-bezier(.3,1.4,.6,1) both}
+  .oops-back.in .b1{animation-delay:.15s}.oops-back.in .b2{animation-delay:.25s}.oops-back.in .b3{animation-delay:.35s}.oops-back.in .b4{animation-delay:.5s}.oops-back.in .b5{animation-delay:.6s}
+  .oops-back.in .blk.odd{animation:blk-odd 2.6s ease-in-out .8s both}
+  .oops-back.in .hook{animation:hook 2.6s ease-in-out .8s both}
+  .oops-back.in .oops-reasons li,.oops-back.in .oops-fixes .btn{animation:qf-in .4s ease both;animation-delay:calc(.45s + var(--i,0) * 90ms)}
+  .oops-back.in .oops-mm{animation:mm-in .6s cubic-bezier(.3,1.5,.6,1) .25s both}
+}
+@keyframes blk-drop{from{transform:translateY(-120px);opacity:0}to{transform:none;opacity:1}}
+@keyframes blk-odd{0%{transform:translateY(-120px);opacity:0}18%{transform:translateY(0);opacity:1}30%{transform:rotate(-6deg)}40%{transform:rotate(5deg)}50%{transform:rotate(-3deg)}62%{transform:translate(6px,-4px) rotate(10deg)}100%{transform:translate(14px,-16px) rotate(12deg);opacity:.95}}
+@keyframes hook{0%,55%{transform:none}100%{transform:translateY(10px)}}
+@keyframes mm-in{from{transform:translateY(60px) scale(.7);opacity:0}to{transform:none;opacity:1}}
+.oops-body{padding:18px 22px 18px;display:flex;flex-direction:column;gap:12px}
+.oops-body .lab{color:var(--bad)}
+.oops-back.info .oops-body .lab{color:var(--primary)}
+.oops-body h2{font-size:21px;line-height:1.25}
+.oops-lead{margin:0;color:var(--ink-2)}
+.oops-reasons{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.oops-reasons li{display:flex;gap:10px;align-items:flex-start;background:var(--surface-2);border:1px solid var(--line);border-radius:11px;padding:9px 11px}
+.oops-reasons .ri{width:24px;height:24px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;font:700 13px var(--display);background:var(--bad-soft);color:var(--bad)}
+.oops-back.info .oops-reasons .ri{background:var(--primary-soft);color:var(--primary-2)}
+.oops-reasons b{display:block;font-size:14px}
+.oops-reasons span{font-size:13px;color:var(--muted)}
+.oops-fixes{display:flex;flex-direction:column;gap:6px}
+.oops-faq{display:flex;flex-direction:column;gap:6px}
+.oops-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;border-top:1px solid var(--line-2);padding-top:10px}
+.oops-foot .btn.link{text-decoration:underline}
+
+/* toasts */
+.toasts{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:55;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:min(560px,calc(100vw - 24px))}
+.toast{pointer-events:auto;display:flex;align-items:center;gap:10px;background:var(--ink);color:#fff;border-radius:14px;padding:8px 10px 8px 8px;box-shadow:0 12px 30px rgba(15,42,67,.3);opacity:0;transform:translateY(24px) scale(.96);transition:opacity .28s,transform .35s cubic-bezier(.3,1.4,.6,1);width:100%}
+.toast.in{opacity:1;transform:none}
+.toast .t-face{width:40px;height:44px;background:rgba(255,255,255,.12);border-radius:10px;display:grid;place-items:end center;overflow:hidden;flex:0 0 auto}
+.toast .t-face svg{width:40px;height:50px;margin-bottom:-6px}
+.toast .t-txt{flex:1;min-width:0;display:flex;flex-direction:column;font-size:13.5px}
+.toast .t-txt b{font-size:14px}
+.toast .t-txt span{color:#C9D9EA}
+.toast .btn.soft{background:rgba(255,255,255,.14);color:#fff}
+.toast .t-x{border:0;background:none;color:#C9D9EA;cursor:pointer;width:28px;height:28px;border-radius:8px;display:grid;place-items:center}
+.toast.bad{background:#5A1F19}
 </style>
 
 <div class="app">
@@ -405,6 +595,8 @@ details.regs[open] summary::after{content:"–"}
       <button data-route="plots"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 12h18M12 3v18"/></svg>Plot sizes</button>
       <button data-route="cost"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M9 6h6M9 11h.01M12 11h.01M15 11h.01M9 15h.01M12 15h.01M15 15h.01M9 18h6"/></svg>Cost estimator</button>
       <button data-route="bylaws"><svg viewBox="0 0 24 24"><path d="M4 4h12a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4z"/><path d="M8 9h8M8 13h6"/></svg>CDA bylaws</button>
+      <span class="sec">Support</span>
+      <button data-route="help"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .9-1 1.7M12 17h.01"/></svg>Help &amp; FAQ</button>
     </nav>
     <div class="side-foot">Plans follow the CDA Islamabad residential bylaws. Concept designs — get an architect to prepare the drawings you submit for approval.</div>
   </aside>
@@ -456,10 +648,12 @@ details.regs[open] summary::after{content:"–"}
         <div><h2>Start from a plot size</h2><p class="sub">Typical answers are filled in — you can change everything</p></div>
         <div class="quick" id="quick"></div>
       </div>
+      <div class="dash-help" id="quick-dash"></div>
     </section>
 
     <!-- ===================== NEW DESIGN (questions) ===================== -->
     <section class="page" data-view="new" hidden>
+      <div class="wiz-layout">
       <div class="wiz">
         <ol class="steps" id="steps" aria-label="Progress"></ol>
         <div class="card card-q" data-step="0">
@@ -537,6 +731,8 @@ details.regs[open] summary::after{content:"–"}
           <div class="wnav"><button class="btn lg" data-back>Back</button><button class="btn primary lg" id="go">Design my house</button></div>
         </div>
         <div class="card working" id="working" hidden><div class="spinner" aria-hidden="true"></div><span>Designing layouts that fit your plot…</span></div>
+      </div>
+      <aside class="wiz-aside" id="quick-new" aria-label="Quick answers"></aside>
       </div>
     </section>
 
@@ -634,6 +830,7 @@ details.regs[open] summary::after{content:"–"}
             <div class="who"><i><svg viewBox="0 0 24 24"><path d="M12 3l2.2 4.5L19 9l-3.5 3.3.8 4.7L12 14.8 7.7 17l.8-4.7L5 9l4.8-1.5z"/></svg></i><div><b>Assistant</b><div class="hint">Suggestions for this layout</div></div></div>
             <ul class="tips" id="tips"></ul>
           </div>
+          <div id="quick-design"></div>
         </div>
       </div>
     </section>
@@ -643,12 +840,14 @@ details.regs[open] summary::after{content:"–"}
       <div class="toolbar"><input type="text" id="proj-search" placeholder="Search projects" aria-label="Search projects"><div class="grow" style="flex:1"></div><button class="btn primary" data-route="new">New design</button></div>
       <div class="card"><div class="tbl-wrap"><table id="proj-table"></table></div></div>
       <p class="hint">Projects are saved in this browser on this device.</p>
+      <div class="dash-help" id="quick-projects"></div>
     </section>
 
     <!-- ===================== PLOT SIZES ===================== -->
     <section class="page" data-view="plots" hidden>
       <div class="row between"><div><h2 style="font-size:20px">Every standard plot, one plan each</h2><p class="sub">Best suggestion for each CDA plot with typical answers. Pick one to start designing.</p></div><button class="btn" id="cat-regen">Suggest again</button></div>
       <div class="cat-grid" id="cat-grid"></div>
+      <div class="dash-help" id="quick-plots"></div>
     </section>
 
     <!-- ===================== COST ESTIMATOR ===================== -->
@@ -671,10 +870,12 @@ details.regs[open] summary::after{content:"–"}
           <p class="hint">Excludes land, CDA approval fees, architect, boundary wall, furniture and solar. Rates: Islamabad 2026 market surveys (grey structure PKR 2,800–3,800/ft², standard turnkey 5,000–6,500, premium 6,500–9,000).</p>
         </div>
       </div>
+      <div class="dash-help" id="quick-cost"></div>
     </section>
 
     <!-- ===================== BYLAWS ===================== -->
     <section class="page" data-view="bylaws" hidden>
+      <div class="page-split">
       <div class="card card-pad prose">
         <h2>How BuildMe follows CDA bylaws</h2>
         <p>BuildMe is a rule-based assistant. Every plan is built from an editable scheme: the rooms in each row, front to back, and how deep each row is. The same scheme always gives the same plan. Suggestions come from searching many schemes and keeping the best; after that, you're in control.</p>
@@ -699,6 +900,13 @@ details.regs[open] summary::after{content:"–"}
         <p>These are the CDA 1993 regulations as published on cda.gov.pk, plus current rear-setback practice. Later amendments and society bylaws (DHA, Bahria, B-17 and others) may differ: use "My society has different bylaws" on the review step. A licensed architect should prepare drawings for approval.</p>
         <p class="hint">Source: <a href="https://www.cda.gov.pk/public/Assets/pdf/1699885249_b05cb0e0_abed_43cf_8916_685822960e8d_.pdf" target="_blank" rel="noopener">CDA Residential Sectors Zoning (Building Control) Regulation 1993 (PDF)</a></p>
       </div>
+      <aside id="quick-bylaws" aria-label="Quick answers"></aside>
+      </div>
+    </section>
+
+    <!-- ===================== HELP & FAQ ===================== -->
+    <section class="page" data-view="help" hidden>
+      <div id="help-page" style="display:flex;flex-direction:column;gap:20px"></div>
     </section>
   </div>
 </div>
@@ -916,7 +1124,7 @@ details.regs[open] summary::after{content:"–"}
       if (rest < 3) out.push(mk(bt, sx, y, sw, h, { owner: main.id }));
       else {
         out.push(mk(bt, sx, bathTop ? y : y + rest, sw, bd, { owner: main.id }));
-        out.push(mk(bt === 'powder' ? 'store' : 'dress', sx, bathTop ? y + bd : y, sw, rest, { owner: main.id, wr: !it.dress || rest < 5 }));
+        out.push(mk(bt === 'powder' || bt === 'sbath' ? 'store' : 'dress', sx, bathTop ? y + bd : y, sw, rest, { owner: main.id, wr: !it.dress || rest < 5 }));
       }
       return out;
     }
@@ -998,19 +1206,38 @@ details.regs[open] summary::after{content:"–"}
     M.push(k >= 2 ? stack([room('kitchen', T.kitchen), room('store', T.store, { minW: 3 })], { flip: R_() < 0.5 }) : room('kitchen', T.kitchen));
     const st = stairCol(S.sw, !opts.drawing && W >= 30 ? 'powder' : 'store'); st.stairTop = R_() < 0.5; M.push(st);
     for (; placed < gfBeds; placed++) R.push(bedItem(T.bed));
-    if (k >= 3) R.push(room('study', T.study));
-    if (opts.servant || rules.servantRequired) R.push(stack([room('servant', T.servant, { minW: 9.5 }), room('sbath', 28, { minW: 3.75 })], { flip: R_() < 0.5 }));
+    if (k >= 3 && (opts.storeys >= 2 || gfBeds <= 3)) R.push(room('study', T.study));
+    if (opts.servant || rules.servantRequired) R.push(suite('servant', T.servant, { minW: 10, sideW: 5, bathD: 6.75, bathType: 'sbath', sideLeft: R_() < 0.5, bathTop: R_() < 0.5 }));
 
-    const minF = Math.max(11.5, dIn), minM = 13, minR = 10.5;
+    // the front row must hold something beside the porch: bring the kitchen (or dining) forward
+    if (F.length === 1) {
+      const ki = M.findIndex(it => it.t === 'dining') >= 0 && fRoom >= 9.5 ? M.findIndex(it => it.t === 'dining') : M.findIndex(it => it.t === 'kitchen');
+      if (ki >= 0) F.push(M.splice(ki, 1)[0]); else F.push(room('foyer', 60, { minW: 4 }));
+    }
+    const minF = Math.max(11.5, dIn), minM = k <= 1 ? 12.5 : 13, minR = k <= 1 ? 9.5 : 10.5;
     const covD = (rules.cov * plot.sqft + (dIn > 0 ? pw * dIn : 0)) / W;
     const Dmax = Math.floor(Math.min(E.Davail, covD) * 2) / 2; S.Dmax = Dmax;
     const wMin = its => its.reduce((s, it) => s + itemMinW(it, S), 0);
     let bands;
     if (R.length && Dmax >= minF + minM + minR) {
       if (wMin(R) > W && Dmax >= minF + minM + minR * 2) {
-        const R1 = [], R2 = [];
-        R.slice().sort((a, b) => itemMinW(b, S) - itemMinW(a, S)).forEach(it => { (wMin(R1) + itemMinW(it, S) <= W - 4.5 && wMin(R1) <= wMin(R2) ? R1 : R2).push(it); });
-        bands = [{ id: 'F', items: F }, { id: 'M', items: M }, { id: 'Q', items: R1 }, { id: 'R', items: R2 }];
+        // pack the rear rooms into as few rows as possible. Every rear row keeps a 4'-6" spine passage
+        // except the last one, which opens straight onto the corridor in front of it.
+        const corridors = n => 1 + Math.ceil((n - 1) / 2);
+        let maxRows = 2; while ((maxRows + 1) * minR + corridors(maxRows + 1) * 4 <= Dmax - minF - minM) maxRows++;
+        const sorted = R.slice().sort((a, b) => itemMinW(b, S) - itemMinW(a, S));
+        const pack = n => {
+          const caps = Array.from({ length: n }, (_, i) => i === n - 1 ? W : W - 4.5); const rws = caps.map(() => []); let over = false;
+          sorted.forEach(it => { const wv = itemMinW(it, S); let bi = -1; rws.forEach((rw, i) => { if (wMin(rw) + wv <= caps[i] + 0.01 && (bi < 0 || caps[i] - wMin(rw) < caps[bi] - wMin(rws[bi]))) bi = i; }); if (bi < 0) { over = true; bi = n - 1; } rws[bi].push(it); });
+          return { rws, over };
+        };
+        let rows = null;
+        for (let n = 2; n <= maxRows; n++) { const pk = pack(n); rows = pk.rws; if (!pk.over) break; }
+        if (!rows) rows = pack(2).rws;
+        // keep the fullest rows at the front, the last (no-spine) row widest
+        rows = rows.filter(rw => rw.length);
+        while (rows.length < 2) rows.push([]);
+        bands = [{ id: 'F', items: F }, { id: 'M', items: M }].concat(rows.map((rw, i) => ({ id: i === rows.length - 1 ? 'R' : 'Q', items: rw })));
       } else bands = [{ id: 'F', items: F }, { id: 'M', items: M }, { id: 'R', items: R }];
     } else bands = [{ id: 'F', items: F }, { id: 'M', items: M.concat(R) }];
     const mins = { F: minF, M: minM, Q: minR, R: minR, C: 4 };
@@ -1034,10 +1261,31 @@ details.regs[open] summary::after{content:"–"}
     const spare = S.E.W - last.items.reduce((s, it) => s + itemMinW(it, S), 0);
     if (spare >= 7 && r() < 0.6) { const p = r(); last.items.push(room(p < 0.55 ? 'court' : p < 0.8 ? 'laundry' : 'study', Math.min(spare, 12) * 11, { minW: p < 0.55 ? 6 : 5 })); }
     for (let i = 1; i < b.length; i++) b[i].items = shuffle(b[i].items, r);
+    // either: circulation rooms in the middle with kitchen / stair on each side (all reachable) …
+    const pick = r();
+    if (pick < 0.45) {
+      const Mi = b[1].items, isC = it => it.kind === 'room' && RT[it.t].circ;
+      const circ = Mi.filter(isC), nc = Mi.filter(it => !isC(it));
+      if (circ.length && nc.length >= 2) b[1].items = [nc[0]].concat(circ, nc.slice(1));
+    } else if (pick < 0.85) {
+    // … or the lounge behind the porch so the entrance opens straight into it
+      const Mi = b[1].items, li = Mi.findIndex(it => it.t === 'lounge'); if (li >= 0) { const L = Mi.splice(li, 1)[0]; if (F.items[0] === porch) Mi.unshift(L); else Mi.push(L); } }
     if (b.length >= 4) {
-      S.spine = r() < 0.5 ? 'L' : 'R';
+      const Mi = b[1].items, li = Mi.findIndex(it => it.t === 'lounge');
+      S.spine = li === 0 ? 'L' : li === Mi.length - 1 && li > 0 ? 'R' : (r() < 0.5 ? 'L' : 'R');
       for (let i = 2; i < b.length; i++) { const p = room('passage', 50, { fixW: 4.5, lockedItem: true }); if (S.spine === 'L') b[i].items.unshift(p); else b[i].items.push(p); }
-    } else if (r() < (b.length === 3 ? 0.4 : 0.2)) {
+      // corridors: one right behind the middle row (serves it and the first rear row),
+      // then one between each later pair of rear rows — every room opens onto a corridor
+      const mkC = () => ({ id: 'C', items: [room('passage', 4 * S.E.W, { minW: 3, lockedItem: true })], minD: 4, fixedD: 4 });
+      const rear = b.splice(2); const minSum0 = b.reduce((s, x) => s + (x.fixedD || x.minD), 0) + rear.reduce((s, x) => s + x.minD, 0);
+      const plan1 = [mkC(), rear[0]];
+      for (let i = 1; i < rear.length; i += 2) { if (i + 1 < rear.length) plan1.push(rear[i], mkC(), rear[i + 1]); else plan1.push(mkC(), rear[i]); }
+      const plan2 = []; rear.forEach((rw, i) => { plan2.push(rw); if (i % 2 === 0 && i < rear.length - 1) plan2.push(mkC()); });
+      const cost = pl => pl.filter(x => x.id === 'C').length * 4;
+      const pl = S.Dmax >= minSum0 + cost(plan1) ? plan1 : S.Dmax >= minSum0 + cost(plan2) ? plan2 : rear;
+      b.push(...pl);
+      const lb = b[b.length - 1]; if (b[b.length - 2].id === 'C') lb.items = lb.items.filter(it => !(it.t === 'passage' && it.lockedItem));
+    } else if (r() < (b.length === 3 ? (b[2].items.length >= 3 ? 0.6 : 0.4) : 0.2)) {
       b.splice(b.length - 1, 0, { id: 'C', items: [room('passage', 4 * S.E.W, { minW: 3, lockedItem: true })], minD: 4, fixedD: 4 });
     }
     // depths
@@ -1118,9 +1366,10 @@ details.regs[open] summary::after{content:"–"}
     }));
     const porch = rooms.find(r => r.t === 'porch');
     if (porch) {
-      const pref = ['foyer', 'lounge', 'dining', 'passage'];
-      const c = nb(porch, o => pref.includes(o.t), 3.5).sort((p, q) => pref.indexOf(p.o.t) - pref.indexOf(q.o.t));
-      if (c.length) placeDoor(porch, c[0].o, c[0].s, 4, 'entry', c[0].o.id);
+      // main entrance; fall back to the drawing room, then a kitchen door (common on small plots)
+      const pref = ['foyer', 'lounge', 'dining', 'passage', 'drawing', 'kitchen'];
+      const c = nb(porch, o => pref.includes(o.t), 3).sort((p, q) => pref.indexOf(p.o.t) - pref.indexOf(q.o.t));
+      for (const e of c) if (placeDoor(porch, e.o, e.s, e.s.len >= 4.6 ? 4 : 3, 'entry', e.o.id)) { if (e.o.t === 'kitchen') porch.kitchenEntry = true; break; }
     }
     const circPref = ['passage', 'flounge', 'lounge', 'foyer', 'dining', 'stair'];
     for (const rm of rooms) {
@@ -1145,19 +1394,21 @@ details.regs[open] summary::after{content:"–"}
       } else if (rm.t === 'kitchen') {
         const pref = ['dining', 'lounge', 'passage', 'foyer', 'flounge'];
         const c = nb(rm, o => pref.includes(o.t), 3).sort((p, q) => pref.indexOf(p.o.t) - pref.indexOf(q.o.t));
-        if (c.length) ok = placeDoor(c[0].o, rm, c[0].s, 3, 'door', rm.id);
+        for (const e of c) { ok = placeDoor(e.o, rm, e.s, 3, 'door', rm.id); if (ok) break; }
+        if (!ok) { const pe = nb(rm, o => o.t === 'porch', 3); if (pe.length) ok = placeDoor(pe[0].o, rm, pe[0].s, 3, 'door', rm.id); }
       } else if (rm.t === 'terrace') {
         const c = nb(rm, o => isCirc(o) || o.t === 'bed' || o.t === 'study', 3).sort((p, q) => isCirc(q.o) - isCirc(p.o));
         if (c.length) ok = placeDoor(c[0].o, rm, c[0].s, 3, 'door', rm.id);
       } else if (rm.t === 'stair' && fi === 0) {
-        const c = nb(rm, o => ['lounge', 'passage', 'foyer', 'dining'].includes(o.t), 3.5);
-        if (c.length) ok = placeDoor(c[0].o, rm, c[0].s, Math.min(rm.w - 0.75, 4), 'open', rm.id);
+        const sp = ['lounge', 'passage', 'foyer', 'dining', 'porch'];
+        const c = nb(rm, o => sp.includes(o.t), 3.5).sort((p, q) => sp.indexOf(p.o.t) - sp.indexOf(q.o.t));
+        for (const e of c) { ok = placeDoor(e.o, rm, e.s, Math.min(rm.w - 0.75, 4), 'open', rm.id); if (ok) break; }
       } else if (rm.t === 'shaft' || rm.t === 'proof') ok = true;
       else if (rm.t === 'court') { const c = nb(rm, isCirc, 3); if (c.length) placeDoor(c[0].o, rm, c[0].s, 3, 'door', rm.id); ok = true; rm.extDoor = true; }
       else {
         const c = nb(rm, isCirc, 3).sort((p, q) => circPref.indexOf(p.o.t) - circPref.indexOf(q.o.t));
         if (rm.stairFiller) { const kk = nb(rm, o => o.t === 'kitchen', 3); if (kk.length) c.unshift(kk[0]); }
-        if (c.length) ok = placeDoor(c[0].o, rm, c[0].s, rm.t === 'bed' || rm.t === 'study' ? 3 : 2.5, 'door', rm.id);
+        for (const e of c) { ok = placeDoor(e.o, rm, e.s, rm.t === 'bed' || rm.t === 'study' ? 3 : 2.5, 'door', rm.id); if (ok) break; }
       }
     }
     const start = fi === 0 ? porch : rooms.find(r => r.t === 'stair');
@@ -1220,6 +1471,7 @@ details.regs[open] summary::after{content:"–"}
       if (rooms.some(r => r.t === 'dining') && !has('kitchen', 'dining')) s += 14;
       if (rooms.some(r => r.t === 'dining') && !has('dining', 'lounge')) s += 8;
       if (!conn.links.some(l => l.kind === 'entry')) s += 60;
+      if (rooms.some(r => r.kitchenEntry)) s += 40;
     }
     s += rooms.filter(r => r.t === 'passage').reduce((a, r) => a + r.w * r.h, 0) / 12;
     return { s, issues };
@@ -1464,18 +1716,19 @@ details.regs[open] summary::after{content:"–"}
   }
 
   // ---------- Search (proposes schemes; not used for edits) ----------
-  function generate(plot, opts, rules, seed, tries) {
+  function generate(plot, opts, rules, seed, tries, diag) {
     const R0 = rngFrom(seed); tries = tries || 160;
+    const why = (k) => { if (diag) diag[k] = (diag[k] || 0) + 1; };
     let o = clone(opts); if (o.storeys === 1) o.gfBeds = o.beds; o.gfBeds = Math.min(o.gfBeds, o.beds);
-    const notesBase = []; let best = null;
-    for (let attempt = 0; attempt < 5; attempt++) {
-      const res = [];
-      for (let t = 0; t < tries; t++) {
+    const notesBase = []; let best = null; const moved = { up: 0, down: 0 };
+    for (let attempt = 0; attempt < 16; attempt++) {
+      const res = []; const nt = attempt < 2 ? tries : Math.ceil(tries / (attempt < 5 ? 2 : 3));
+      for (let t = 0; t < nt; t++) {
         const r = rngFrom(Math.floor(R0() * 1e9));
-        let S = initialScheme(plot, o, rules, r); if (!S) break;
+        let S = initialScheme(plot, o, rules, r); if (!S) { why('scheme'); break; }
         S.corner = opts.corner; S.cornerSide = opts.cornerSide;
-        S = vary(S, r); if (!S) continue;
-        let P = realise(S); if (P.error) continue;
+        S = vary(S, r); if (!S) { why('depth'); continue; }
+        let P = realise(S); if (P.error) { why('row:' + P.error.replace(/\d[\d'"-]*/g, '#')); continue; }
         // pull depth back if ground coverage is exceeded
         for (let fix = 0; fix < 4 && P.stats.gfCounted > P.stats.covMax + 0.5; fix++) {
           const over = (P.stats.gfCounted - P.stats.covMax) / S.E.W + 0.25;
@@ -1493,24 +1746,41 @@ details.regs[open] summary::after{content:"–"}
             const P2 = realise(S2); if (P2.error) continue;
             if (!bestF || P2.score < bestF.score) bestF = P2;
           }
-          if (!bestF) continue; P = bestF;
+          if (!bestF || bestF.floors.length < 2) { why('ff'); continue; } P = bestF;
         }
-        if (P.floors.some(f => f.unreachable.length)) continue;
+        if (P.floors.some(f => f.unreachable.length)) { why('unreach:' + P.floors.map(f => f.unreachable.map(u => (f.rooms.find(r => r.id === u) || {}).t || u).join(',')).join('/')); continue; }
         P.sig = P.floors[0].rooms.map(x => x.t[0] + Math.round(x.x) + ',' + Math.round(x.y)).join('');
         res.push(P);
       }
-      res.sort((a, b) => a.score - b.score);
+      // a plan that fails a bylaw only wins when nothing compliant was found
+      res.forEach(p => { p.badN = p.checks.filter(c => c.s === 'bad').length; p.rank = p.score + p.badN * 1000; });
+      res.sort((a, b) => a.rank - b.rank);
+      const okFound = res.some(p => !p.badN);
       if (res.length) {
-        const val = res[0].score + notesBase.length * 30;
+        // rank attempts against the ORIGINAL brief: every bedroom short costs 140, every relaxation 30
+        const val = res[0].rank + Math.max(0, opts.beds - o.beds) * 140 + notesBase.length * 30;
         if (!best || val < best.val) best = { val, res, notes: notesBase.slice() };
-        if (res[0].score < 90) break;
+        if (res[0].rank < 90) break;
       }
-      if (o.gfBeds > 0 && o.storeys >= 2) { o.gfBeds--; notesBase.push('One ground-floor bedroom moved upstairs for a workable plan.'); }
-      else if (o.drawing) { o.drawing = false; notesBase.push('Drawing room dropped — it did not fit.'); }
-      else if (o.beds > 2) { o.beds--; notesBase.push('One bedroom fewer, to fit the plot.'); }
-      else break;
+      if (best && best.res[0].stats.beds >= opts.beds && best.res[0].rank < 150) break;
+      if (!relax(okFound, okFound && res[0].stats.beds < o.beds)) break;
     }
-    if (!best) return [];
+    function relax(found, short) {
+      // gentlest change first; each step is explained to the user
+      if (found && short && o.storeys >= 2 && !moved.down && o.gfBeds < Math.min(4, o.beds)) { o.gfBeds++; moved.up++; notesBase.push('One bedroom moved downstairs — the first floor could not hold them all.'); return true; }
+      if (o.gfBeds > 0 && o.storeys >= 2 && !moved.up) { o.gfBeds--; moved.down++; notesBase.push('One ground-floor bedroom moved upstairs for a workable plan.'); return true; }
+      if (o.dress) { o.dress = false; notesBase.push('Dressing rooms reduced to wardrobes — they did not fit.'); return true; }
+      if (o.dining) { o.dining = false; notesBase.push('Separate dining merged into the lounge — it did not fit.'); return true; }
+      if (o.drawing) { o.drawing = false; notesBase.push('Drawing room dropped — it did not fit.'); return true; }
+      if (o.cars >= 2) { o.cars = 1; notesBase.push('Car porch reduced to one car — two did not fit.'); return true; }
+      if (o.servant && !rules.servantRequired) { o.servant = false; notesBase.push('Servant room dropped — it did not fit.'); return true; }
+      if (found) return false; // only give up bedrooms when nothing fits at all
+      if (o.storeys === 1 && o.beds > 1) { o.beds--; o.gfBeds = o.beds; notesBase.push('One bedroom fewer — a single storey on this plot cannot hold more.'); return true; }
+      if (o.storeys >= 2 && o.beds > 1) { o.beds--; notesBase.push('One bedroom fewer, to fit the plot.'); return true; }
+      return false;
+    }
+    if (diag) { diag.tried = notesBase.slice(); diag.opts = o; }
+    if (!best) { const none = []; none.diag = diag || null; return none; }
     const uniq = []; const seen = new Set();
     for (const p of best.res) { if (seen.has(p.sig)) continue; seen.add(p.sig); p.notes = best.notes.concat(p.notes.filter(n => !best.notes.includes(n))); p.scheme.notes = p.notes.slice(); uniq.push(p); if (uniq.length >= 6) break; }
     return uniq;
@@ -1588,7 +1858,7 @@ details.regs[open] summary::after{content:"–"}
     add(S, type, floor, lane) {
       const S2 = clone(S); const T = S2.T; let it;
       if (type === 'bed') it = suite('bed', T.bed, { sideLeft: false, bathTop: false, dress: S2.opts.dress && S2.k >= 2 });
-      else if (type === 'servant') it = stack([room('servant', T.servant, { minW: 9.5 }), room('sbath', 28, { minW: 3.75 })]);
+      else if (type === 'servant') it = suite('servant', T.servant, { minW: 10, sideW: 5, bathD: 6.75, bathType: 'sbath' });
       else if (type === 'drawing') it = room('drawing', T.drawing);
       else if (type === 'dining') it = room('dining', T.dining);
       else if (type === 'study') it = room('study', T.study);
@@ -1623,7 +1893,7 @@ details.regs[open] summary::after{content:"–"}
     },
   };
 
-  const api = { PLOTS, SCHED_A, RT, cdaRules, porchRules, defaultOpts, generate, realise, edit, locate, fmt, WALL, annex1 };
+  const api = { PLOTS, SCHED_A, RT, cdaRules, porchRules, defaultOpts, generate, realise, edit, locate, fmt, WALL, annex1, _dbg: { initialScheme: (...a) => initialScheme(...a), vary: (...a) => vary(...a), rngFrom: (...a) => rngFrom(...a) } };
   if (typeof module !== 'undefined') module.exports = api; else root.BuildMe = api;
 })(this);
 
@@ -2418,10 +2688,454 @@ details.regs[open] summary::after{content:"–"}
 
 </script>
 <script>
+/* BuildMe — help layer: Mimar (the architect guide), FAQ library, quick-answer cards, animated pop-ups and toasts.
+   Pure DOM + inline SVG; no dependencies. Exposes window.BuildMeHelp. */
+(function (root) {
+  'use strict';
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) { } } };
+  const reduce = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } };
+
+  // ---------------------------------------------------------------------------
+  // FAQ library. screens: where the question is most useful (side cards + Mimar).
+  // ---------------------------------------------------------------------------
+  const CATS = {
+    fit: 'When a plan won’t fit', plots: 'Plots & sizes', bylaws: 'CDA bylaws', design: 'Layouts & rooms',
+    cost: 'Cost', files: 'Downloads & files', app: 'Using BuildMe',
+  };
+  // most bedrooms each standard plot takes with a compliant plan (typology sweep, beds 1–8, all options)
+  const FITS = [
+    ['25 × 40', '4 Marla', 1, 3], ['25 × 50', '5 Marla', 2, 5], ['30 × 60', '8 Marla', 3, 7], ['35 × 70', '10 Marla', 3, 7],
+    ['40 × 80', '14 Marla', 5, '8+'], ['50 × 90', '1 Kanal', 5, '8+'], ['50 × 100', '1 Kanal+', 4, '8+'], ['60 × 120', '1.6 Kanal', '8+', '8+'], ['75 × 120', '2 Kanal', '8+', '8+'],
+  ];
+  const fitsTable = () => `<div class="tbl-wrap"><table class="faq-tbl"><thead><tr><th>Plot</th><th class="num">Single storey</th><th class="num">Double storey</th></tr></thead><tbody>${FITS.map(r => `<tr><td>${r[0]} <span class="hint">${r[1]}</span></td><td class="num">${r[2]}</td><td class="num">${r[3]}</td></tr>`).join('')}</tbody></table></div><p class="hint">Bedrooms with attached baths, plus lounge, kitchen, stairs and a car porch, within CDA coverage and FAR.</p>`;
+
+  const FAQ = [
+    // ---- when a plan won't fit
+    { id: 'nofit', cat: 'fit', screens: ['new', 'design', 'dashboard'], tip: 'If a brief can’t fit, I tell you which row overflowed and offer one-click fixes.',
+      q: 'Why couldn’t BuildMe make a plan for my brief?',
+      a: 'Two things limit every plan: the <b>width</b> left after side setbacks (each row of rooms has to fit across it) and the <b>area</b> CDA lets you cover (ground coverage and FAR). When a brief asks for more than both allow, Mimar shows which row didn’t fit and offers quick fixes: double storey, one bedroom fewer, or no drawing room.' },
+    { id: 'fewer', cat: 'fit', screens: ['design', 'new'], tip: 'Fewer bedrooms than you asked for? Coverage and FAR cap the built area — a double storey usually fixes it.',
+      q: 'Why did I get fewer bedrooms than I asked for?',
+      a: 'Coverage and FAR cap how much you can build. On a 25 × 50 plot, for example, the ground floor can be at most 750 ft². That holds two bedrooms with baths, plus a lounge, kitchen, stairs and porch. Choose <b>double storey</b> to put more bedrooms upstairs. Every adjustment BuildMe makes is listed in the yellow note above the layouts.' },
+    { id: 'order', cat: 'fit', screens: ['design'], tip: 'When space runs out I give things up in a fixed order — bedrooms always last.',
+      q: 'In what order does BuildMe give things up?',
+      a: 'Gentlest change first: ground-floor bedrooms move upstairs (or downstairs if the first floor is full), then dressing rooms become wardrobes, separate dining joins the lounge, the drawing room goes, a 2-car porch becomes 1-car, and an optional servant room goes. Bedrooms are reduced only when nothing else works. If a plot requires a servant room, it’s never removed.' },
+    { id: 'howmany', cat: 'fit', screens: ['new', 'plots', 'dashboard', 'help'], tip: 'A 10 marla plot takes about 3 bedrooms single storey, or 7 double storey.',
+      q: 'How many bedrooms fit on my plot?', a: () => fitsTable() },
+    { id: 'narrow', cat: 'fit', screens: ['new'], tip: 'Plots narrower than 25 ft need a double storey — one floor can’t fit lounge, kitchen, stairs and a bedroom across.',
+      q: 'My plot is narrower than 25 ft. Can BuildMe design it?',
+      a: 'Yes, as a <b>double storey</b>. On a 20–24 ft wide plot, a single floor can’t fit the lounge, kitchen, stairs and a bedroom across, so BuildMe puts the bedrooms upstairs. Plots under 16 ft of buildable width can’t be designed.' },
+    { id: 'relax', cat: 'fit', screens: ['new'], tip: 'Society with its own bylaws? Enter its setbacks, coverage and FAR on the review step.',
+      q: 'Can I relax the rules to make my brief fit?',
+      a: 'On the review step, open <b>My society has different bylaws</b> and enter your society’s setbacks, coverage and FAR. Plans are designed to those numbers. The bylaw check still compares against CDA rules, so anything looser shows as <i>Fail</i>. That reminds you it isn’t CDA-compliant.' },
+    { id: 'kitchenentry', cat: 'fit', screens: ['design'], tip: 'On very tight plots the kitchen may get a door from the porch — common on 4–5 marla houses.',
+      q: 'Why does my kitchen open from the porch?',
+      a: 'On very tight plots, the only way to give every room a door is sometimes a kitchen door from the porch. That’s common on 4–5 marla houses. Pick another layout, or remove a room, to get a separate entrance hall.' },
+
+    // ---- plots
+    { id: 'sizes', cat: 'plots', screens: ['dashboard', 'new', 'plots'], tip: 'Every standard CDA plot is ready to go, from 4 marla to 2 kanal — or type your own size.',
+      q: 'Which plot sizes does BuildMe support?',
+      a: 'All the standard Islamabad sizes, from 25 × 40 (4 marla) to 75 × 120 (2 kanal). You can also enter any custom size from 20 to 120 ft wide and 30 to 200 ft deep. Width is always the side facing the road.' },
+    { id: 'marla', cat: 'plots', screens: ['new', 'plots'], tip: 'Plot names follow local usage; the rules use your real width × depth.',
+      q: 'Why is a 25 × 50 plot called “5 marla”?',
+      a: 'Names follow how plots are sold in Islamabad: 25 × 50 as “5 marla”, 35 × 70 as “10 marla”, 50 × 90 as “1 kanal”. BuildMe always works from the real width and depth, so the name never changes the rules.' },
+    { id: 'corner', cat: 'plots', screens: ['new'], tip: 'Corner plot? Tick it — the side facing the road gets windows.',
+      q: 'What changes for a corner plot?',
+      a: 'Tick <b>Corner plot</b> on the first step. The side facing the second road counts as an open face, so rooms along it get windows. Setbacks still follow your plot’s CDA category.' },
+    { id: 'road', cat: 'plots', screens: ['new', 'design'], tip: 'Tell me which side the road is on and I’ll point the plan and the sun the right way.',
+      q: 'Why does it ask which side the road is on?',
+      a: 'The plan is always drawn with the road at the bottom. The road side sets the north arrow, which the assistant uses for sun advice. For example, it warns when bedrooms face the hot west sun.' },
+
+    // ---- bylaws
+    { id: 'setbacks', cat: 'bylaws', screens: ['new', 'bylaws'], tip: 'Rear open space: 5 ft up to 5 marla, 7 ft below 1 kanal, 10 ft from 1 kanal.',
+      q: 'What setbacks does BuildMe apply?',
+      a: '<b>Front:</b> from Schedule A, 5 to 20 ft depending on plot category. <b>Rear:</b> current CDA practice, which is 5 ft up to 5 marla, 7 ft below 1 kanal and 10 ft from 1 kanal. <b>Sides:</b> only detached plots (frontage 50 ft and up) have side setbacks; terraced houses share party walls.' },
+    { id: 'coverage', cat: 'bylaws', screens: ['new', 'bylaws', 'dashboard'], tip: 'Terraced plots may cover 60% of the plot; detached plots 50%.',
+      q: 'How much of my plot can I build on?',
+      a: 'Ground coverage is capped at <b>60%</b> on terraced plots (up to 625 yd²) and <b>50%</b> on detached plots. The total built area of both floors is capped by the FAR: 1.2, 1.05, 0.9 or 0.85, depending on category.' },
+    { id: 'far', cat: 'bylaws', screens: ['design', 'bylaws'], tip: 'FAR = total floor area ÷ plot area. It’s why the first floor is often smaller.',
+      q: 'What is FAR, and why is my first floor smaller?',
+      a: 'Floor Area Ratio is the total covered area of all floors divided by the plot area. The first floor gets whatever FAR is left after the ground floor. The rest of the roof becomes an <b>open terrace</b>, which doesn’t count towards FAR.' },
+    { id: 'servant', cat: 'bylaws', screens: ['new', 'bylaws'], tip: 'From 501 sq yd (50 × 100 and up) a servant room with bath is mandatory.',
+      q: 'Is a servant quarter required?',
+      a: 'Yes, on plots of <b>501 yd² and above</b> (clause 10): a servant room with its own bath. BuildMe adds it automatically on those plots and won’t let you remove it. On smaller plots it’s optional.' },
+    { id: 'porch', cat: 'bylaws', screens: ['new', 'bylaws'], tip: 'Terraced porch: 180 ft², with no more than 80 ft² in the front setback.',
+      q: 'How big can the car porch be?',
+      a: 'Terraced: 180 ft² in total, with at most 80 ft² in the front setback. Detached: 200 or 300 ft² for one car, 300 or 400 ft² for two. The porch must be at least 9 ft wide, and its roof can’t be used as a terrace (clause 12.06). Porch area within the limit is excluded from FAR.' },
+    { id: 'mumty', cat: 'bylaws', screens: ['bylaws', 'design'], tip: 'The mumty (roof stair tower) is capped at 150, 200 or 250 ft².',
+      q: 'What is a mumty, and how big can it be?',
+      a: 'The mumty is the stair tower that gives access to the roof. Schedule B caps it at 150 ft² (terraced up to 200 yd²), 200 ft² (201–625 yd²) or 250 ft² (detached), with 7′-6″ internal height.' },
+    { id: 'storeys', cat: 'bylaws', screens: ['new', 'bylaws'], tip: 'CDA allows 2 storeys + mumty, up to 30 ft from the road.',
+      q: 'How many storeys are allowed?',
+      a: 'Two storeys plus the mumty, with the building at most 30 ft above the front road and a 3 ft parapet. BuildMe doesn’t model basements yet.' },
+    { id: 'annex', cat: 'bylaws', screens: ['design', 'bylaws'], tip: 'Every habitable room must be at least 100 ft² and 8′-6″ wide.',
+      q: 'What are the minimum room sizes?',
+      a: 'Annex 1: habitable rooms 100 ft² and 8′-6″ wide; kitchen 45 ft² and 5′-0″; bath 24 ft² and 3′-0″; powder room 15 ft². BuildMe checks each room, using clear sizes inside the walls.' },
+    { id: 'units', cat: 'bylaws', screens: ['bylaws'], tip: 'Two living units are allowed only from 488 sq yd.',
+      q: 'Can I build two portions (units)?',
+      a: 'Clause 16 allows one living unit below 488 yd² and two from 488 yd². BuildMe designs a single family home; the Bylaw check tab shows how many units your plot allows.' },
+
+    // ---- design
+    { id: 'how', cat: 'design', screens: ['dashboard', 'design', 'help'], tip: 'No AI here: I lay rooms out in rows, try hundreds of variations and keep the best six that pass the bylaws.',
+      q: 'How does BuildMe design a plan?',
+      a: 'It’s rule-based. Rooms go in rows from the road: porch and drawing room at the front, then lounge, kitchen and stairs, then bedrooms at the back. BuildMe tries hundreds of variations, rejects any that break a bylaw or leave a room without a door, and keeps the best six. The same answers always give the same layouts.' },
+    { id: 'newlayouts', cat: 'design', screens: ['design'], tip: 'Press “New layouts” for six fresh options for the same brief.',
+      q: 'How do I get different layouts?',
+      a: 'Press <b>New layouts</b> in the workspace. BuildMe starts a fresh search for the same brief and returns up to six new options.' },
+    { id: 'customise', cat: 'design', screens: ['design'], tip: 'Drag rooms in the Customise tab — I refuse moves that would break a bylaw and tell you why.',
+      q: 'Can I change the layout myself?',
+      a: 'Yes. In the <b>Customise</b> tab you can drag a room onto another to swap them, drag it into another row to move it, and click it to resize, flip, add or remove rooms. Changes that would break a bylaw, or leave a room unreachable, are refused with the reason.' },
+    { id: 'ensuite', cat: 'design', screens: ['new', 'design'], tip: 'Every bedroom comes with its own attached bath.',
+      q: 'Does every bedroom get a bathroom?',
+      a: 'Yes. Each bedroom is a suite with an attached bath. On bigger plots, tick <b>Dressing rooms</b> for a walk-in dressing room beside each bath.' },
+    { id: 'lawn', cat: 'design', screens: ['new'], tip: 'Front lawn or back yard? I put the spare open space where you want it.',
+      q: 'Front lawn or back yard: what’s the difference?',
+      a: 'With <b>Front lawn</b>, the house sits on the minimum rear setback and the spare depth becomes a lawn by the road. With <b>Back yard</b>, the house sits on the front setback and the spare depth goes behind it. The rear setback is always kept.' },
+    { id: 'corridor', cat: 'design', screens: ['design'], tip: 'Big single-storey plans get corridors so every bedroom has its own door.',
+      q: 'Why is there a corridor across my plan?',
+      a: 'On large plans with several rows of bedrooms, a corridor behind the lounge (and between later rows) gives every room its own door without walking through another room.' },
+    { id: 'stair', cat: 'design', screens: ['design'], tip: 'The stair sits in the middle row so it serves both floors and the roof.',
+      q: 'Where does the staircase go?',
+      a: 'Usually in the middle row, beside the lounge, so it serves both floors and the roof (mumty). On small plots it may start from the entrance or porch, which is common on 4–5 marla houses.' },
+    { id: 'styles', cat: 'design', screens: ['design'], tip: 'Try Modern, Spanish or French in the 3D tab — the model updates live.',
+      q: 'Which elevation styles are there?',
+      a: 'Massing (plain), Modern, Contemporary, Spanish, Minimalist, French and Industrial, chosen from common Pakistani house styles. Pick one in <b>3D & styles</b>, or tick several to render them all for the report.' },
+
+    // ---- cost
+    { id: 'costcalc', cat: 'cost', screens: ['cost', 'design', 'dashboard'], tip: 'Cost = covered area × 2026 Islamabad rate for your finish, plus a style allowance.',
+      q: 'How is the construction cost estimated?',
+      a: 'Covered area × 2026 Islamabad market rates: grey structure PKR 2,800–3,800/ft², standard finish 5,000–6,500, premium 6,500–9,000. The porch counts at half area. Elevation styles add an allowance: Modern 5%, Contemporary 4%, Spanish 7%, French 6%, Industrial 5%.' },
+    { id: 'costex', cat: 'cost', screens: ['cost'], tip: 'Estimates exclude land, CDA fees, architect, boundary wall, furniture and solar.',
+      q: 'What does the estimate leave out?',
+      a: 'Land, CDA approval fees, the architect and structural engineer, boundary wall and gate, furniture, appliances and solar. Treat the estimate as a planning range, not a quotation.' },
+    { id: 'finish', cat: 'cost', screens: ['cost', 'design'], tip: 'Grey structure = shell only; standard = turnkey; premium = imported fittings.',
+      q: 'Grey structure, standard or premium: what’s included?',
+      a: '<b>Grey structure:</b> foundations, frame, brickwork, roof slab, plaster and basic plumbing and electrical conduits. <b>Standard:</b> turnkey, with tiles, local fittings, woodwork and paint. <b>Premium:</b> imported fittings, stone or porcelain floors, false ceilings and better glazing.' },
+
+    // ---- files
+    { id: 'dwg', cat: 'files', screens: ['design'], tip: 'Need DWG? Open the DXF in AutoCAD and Save As DWG.',
+      q: 'Can I get a DWG file?',
+      a: 'Browsers can’t write DWG, so BuildMe exports <b>DXF</b> (AutoCAD R12, layered, in inches). Open it in AutoCAD, BricsCAD or LibreCAD and use <i>Save As → DWG</i>.' },
+    { id: 'pdf', cat: 'files', screens: ['design'], tip: 'The PDF report has every plan, renders, the bylaw check and the cost breakdown.',
+      q: 'What’s in the PDF report?',
+      a: 'A summary page, every floor plan and the roof plan, a front render plus the styles you ticked, a room schedule, the full bylaw check and a cost breakdown.' },
+    { id: 'glb', cat: 'files', screens: ['design'], tip: 'The GLB 3D model opens in Blender, Windows 3D Viewer and most online viewers.',
+      q: 'What can I open the GLB 3D model in?',
+      a: 'Blender, the Windows 3D Viewer, SketchUp (with a glTF importer), and most online glTF viewers.' },
+    { id: 'submit', cat: 'files', screens: ['design', 'bylaws'], tip: 'These are concept designs — a licensed architect prepares the drawings for CDA approval.',
+      q: 'Can I submit these drawings to CDA?',
+      a: 'No. BuildMe makes concept designs to help you brief an architect and plan a budget. A licensed architect must prepare and sign the drawings you submit for approval.' },
+
+    // ---- app
+    { id: 'saved', cat: 'app', screens: ['projects', 'dashboard'], tip: 'Projects are saved in this browser on this device.',
+      q: 'Where are my projects saved?',
+      a: 'In this browser, on this device. Nothing is uploaded. Clearing site data removes them, so download a ZIP of anything you want to keep.' },
+    { id: 'ai', cat: 'app', screens: ['dashboard', 'help'], tip: 'BuildMe uses rules, not AI — same answers, same plans, every time.',
+      q: 'Does BuildMe use AI?',
+      a: 'No. The brief reader, layouts, checks and tips are all rules, so results are predictable and repeatable. Everything runs in your browser.' },
+    { id: 'phone', cat: 'app', screens: ['dashboard'], tip: 'BuildMe works on phones too; the 3D view needs WebGL.',
+      q: 'Does it work on a phone?',
+      a: 'Yes. The layout adapts to small screens. The 3D view needs WebGL, which almost every modern phone has.' },
+    { id: 'brief', cat: 'app', screens: ['dashboard'], tip: 'Type “10 marla, 5 beds, double storey, road east” and I’ll fill in the rest.',
+      q: 'What can I type in the brief box?',
+      a: 'Plot size (“10 marla”, “1 kanal”, “35x70”), bedrooms and how many downstairs, single or double storey, drawing room, dining, servant quarter, dressing rooms, 1 or 2 cars, road side, corner plot, front lawn or back yard, a style (modern, spanish…) and a finish (premium, grey structure).' },
+    { id: 'mimar', cat: 'app', screens: ['help'], tip: 'I’m Mimar — tap me any time for a tip, or minimise me to the corner.',
+      q: 'Who is Mimar?',
+      a: 'Mimar (معمار, “architect”) is BuildMe’s guide. He offers tips for the screen you’re on, explains why a brief didn’t fit and suggests fixes. Tap him for the next tip, or minimise him to the corner.' },
+  ];
+  const byId = Object.fromEntries(FAQ.map(f => [f.id, f]));
+  const ans = f => typeof f.a === 'function' ? f.a() : f.a;
+  function forScreen(screen) { const a = FAQ.filter(f => f.screens.includes(screen)); return a.length ? a : FAQ; }
+  function shuffle(a) { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; }
+
+  // ---------------------------------------------------------------------------
+  // Mimar — an original cartoon architect, drawn in SVG. mood: happy | think | oops | idea | wave
+  // ---------------------------------------------------------------------------
+  let mmN = 0;
+  function mimarSVG(cls) {
+    const u = 'mm' + (mmN++);
+    return `<svg class="mm ${cls || ''}" viewBox="0 0 120 150" aria-hidden="true" focusable="false">
+      <defs><clipPath id="${u}h"><circle cx="60" cy="64" r="27"/></clipPath></defs>
+      <ellipse class="mm-shadow" cx="60" cy="145" rx="26" ry="3.6" fill="#0F2A43" opacity=".12"/>
+      <g class="mm-bob">
+        <g class="mm-bp"><rect x="70" y="104" width="44" height="11" rx="5.5" transform="rotate(-28 92 110)" fill="#CFE5FF" stroke="#1659B4" stroke-width="1.6"/>
+          <path d="M80 117 104 104" stroke="#1659B4" stroke-width="1" opacity=".6" transform="translate(-2 -1)"/><ellipse cx="111" cy="98.5" rx="3.2" ry="5.6" transform="rotate(-28 111 98.5)" fill="#fff" stroke="#1659B4" stroke-width="1.4"/></g>
+        <path d="M30 141c0-22 12-38 30-38s30 16 30 38z" fill="#1E6FD9"/>
+        <path d="M49 104l11 13 11-13" fill="#fff"/><path d="M57 113l3 4 3-4-3 22z" fill="#0F2A43" opacity=".85"/>
+        <rect x="68" y="120" width="11" height="9" rx="1.5" fill="#1659B4"/><rect x="70" y="113" width="2.2" height="9" rx="1" fill="#FFC531"/><rect x="74" y="115" width="2.2" height="7" rx="1" fill="#F05D5E"/>
+        <path d="M84 116c6 3 10 8 12 12" stroke="#1E6FD9" stroke-width="9" stroke-linecap="round" fill="none"/><circle cx="96.5" cy="129" r="5" fill="#E8B48D"/>
+        <g class="mm-arm"><path d="M36 116c-7 2-12-1-15-7" stroke="#1E6FD9" stroke-width="9" stroke-linecap="round" fill="none"/><circle cx="20" cy="107" r="5.2" fill="#E8B48D"/>
+          <g class="mm-pencil"><rect x="16.5" y="88" width="3.4" height="16" rx=".8" fill="#FFC531" transform="rotate(-14 18 96)"/><path d="M15.4 87.6l2.1-5.4 2.2 5.2z" fill="#0F2A43" transform="rotate(-14 18 96)"/></g></g>
+        <g class="mm-head">
+          <circle cx="33.5" cy="66" r="5" fill="#E8B48D"/><circle cx="86.5" cy="66" r="5" fill="#E8B48D"/>
+          <circle cx="60" cy="64" r="27" fill="#F2C29B"/>
+          <g clip-path="url(#${u}h)"><path d="M33 72c3 17 14 22 27 22s24-5 27-22c-5 9-14 12-27 12S38 81 33 72z" fill="#5B3A29"/></g>
+          <path class="mm-mous" d="M50 77c4-3 7-3 10-1 3-2 6-2 10 1-4 2-7 2-10 0-3 2-6 2-10 0z" fill="#5B3A29"/>
+          <circle cx="44" cy="74" r="4" fill="#F28C8C" opacity=".35"/><circle cx="76" cy="74" r="4" fill="#F28C8C" opacity=".35"/>
+          <g class="mm-eyes"><circle cx="50" cy="64" r="2.6" fill="#0F2A43"/><circle cx="70" cy="64" r="2.6" fill="#0F2A43"/><circle cx="51" cy="63" r=".8" fill="#fff"/><circle cx="71" cy="63" r=".8" fill="#fff"/></g>
+          <g fill="none" stroke="#0F2A43" stroke-width="2"><circle cx="50" cy="64" r="7"/><circle cx="70" cy="64" r="7"/><path d="M57 63.5c2-1.5 4-1.5 6 0M43 63l-8-2M77 63l8-2"/></g>
+          <g class="mm-brows" stroke="#5B3A29" stroke-width="2.4" stroke-linecap="round"><path class="b1" d="M44 56.5q6-3 11 0"/><path class="b2" d="M65 56.5q5-3 11 0"/></g>
+          <path class="mm-m mm-m-happy" d="M53 82q7 6 14 0" stroke="#7A2E2E" stroke-width="2.2" fill="#fff" stroke-linecap="round"/>
+          <ellipse class="mm-m mm-m-oops" cx="60" cy="83.5" rx="3.6" ry="4.2" fill="#7A2E2E"/>
+          <path class="mm-m mm-m-think" d="M54 83.5q4 1.5 10-1" stroke="#7A2E2E" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+          <g class="mm-hat"><path d="M31 49c0-17 13-27 29-27s29 10 29 27z" fill="#FFC531"/><path d="M60 22v27M46 25.5c-3 6-4 14-4 23.5M74 25.5c3 6 4 14 4 23.5" stroke="#E0A817" stroke-width="2.2" fill="none"/>
+            <rect x="25" y="46" width="70" height="7.5" rx="3.75" fill="#FFD45E" stroke="#E0A817" stroke-width="1.4"/><rect x="53" y="34" width="14" height="8" rx="2" fill="#1E6FD9"/><path d="M56.5 40v-3.6l3.5-2.4 3.5 2.4V40z" fill="#fff"/></g>
+          <path class="mm-sweat" d="M93 40c3 5 4 7 4 9a4 4 0 0 1-8 0c0-2 1-4 4-9z" fill="#8CC2FF" stroke="#1E6FD9" stroke-width="1"/>
+        </g>
+        <g class="mm-bulb"><circle cx="100" cy="22" r="9" fill="#FFE27A" stroke="#E0A817" stroke-width="1.6"/><rect x="96.5" y="30" width="7" height="5" rx="1.4" fill="#9FB2C6"/>
+          <path d="M100 8v-5M88 13l-3-3M112 13l3-3" stroke="#E0A817" stroke-width="1.8" stroke-linecap="round"/></g>
+        <g class="mm-q"><text x="98" y="30" font-family="Sora,system-ui,sans-serif" font-weight="700" font-size="22" fill="#1E6FD9">?</text></g>
+      </g>
+    </svg>`;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Floating guide (bottom-right). Rotates FAQs for the current screen.
+  // ---------------------------------------------------------------------------
+  const G = { el: null, screen: 'dashboard', deck: [], cur: null, timer: null, paused: false, shownAnswer: false, typing: null };
+  const ROTATE_MS = 16000;
+  const GREET = {
+    dashboard: 'Salaam! I’m Mimar. Describe your house and I’ll draw it to CDA rules.',
+    new: 'Four quick questions and I’ll design layouts that fit your plot.',
+    design: 'Here are your layouts. Ask me anything about them.',
+    projects: 'Your saved designs live here, in this browser.',
+    plots: 'One ready plan for every standard plot. Pick one to start.',
+    cost: 'Let’s put a number on it. Change the area and finish to see the range.',
+    bylaws: 'These are the rules I follow for every plan.',
+    help: 'Search below, or tap me for a random tip.',
+  };
+  function mountGuide() {
+    if (G.el) return G.el;
+    const el = document.createElement('div'); el.className = 'mimar'; el.id = 'mimar';
+    el.innerHTML = `
+      <div class="mm-bubble" id="mm-bubble" role="region" aria-label="Tips from Mimar">
+        <div class="mm-top"><span class="mm-kicker" id="mm-kicker">Mimar says</span><span class="grow"></span>
+          <button class="mm-x" id="mm-min" type="button" aria-label="Minimise Mimar" title="Minimise"><svg viewBox="0 0 24 24"><path d="M6 12h12"/></svg></button></div>
+        <p class="mm-text" id="mm-text" aria-live="polite"></p>
+        <div class="mm-answer" id="mm-answer" hidden></div>
+        <div class="mm-acts"><button type="button" class="btn sm soft" id="mm-ans">Tell me more</button><button type="button" class="btn sm ghost" id="mm-next">Next tip</button><a class="btn sm ghost" href="#help" data-route="help">All FAQs</a></div>
+        <div class="mm-timer"><i id="mm-bar"></i></div>
+      </div>
+      <button type="button" class="mm-avatar" id="mm-avatar" aria-label="Mimar, your architect guide: show a tip" aria-expanded="true">${mimarSVG('mood-wave')}<span class="mm-badge" id="mm-badge" hidden>1</span></button>`;
+    document.body.appendChild(el); G.el = el;
+    const minimised = store.get('buildme.mimar') === 'min' || (window.innerWidth < 640 && store.get('buildme.mimar') !== 'open');
+    setMin(minimised, true);
+    el.querySelector('#mm-min').addEventListener('click', () => setMin(true));
+    el.querySelector('#mm-avatar').addEventListener('click', () => { if (el.dataset.state === 'min') { setMin(false); next(); } else next(); poke(); });
+    el.querySelector('#mm-next').addEventListener('click', () => next());
+    el.querySelector('#mm-ans').addEventListener('click', toggleAnswer);
+    el.addEventListener('mouseenter', () => { G.paused = true; el.classList.add('paused'); });
+    el.addEventListener('mouseleave', () => { G.paused = false; el.classList.remove('paused'); });
+    el.addEventListener('focusin', () => { G.paused = true; el.classList.add('paused'); });
+    el.addEventListener('focusout', () => { G.paused = false; el.classList.remove('paused'); });
+    return el;
+  }
+  function setMin(min, silent) {
+    const el = G.el; el.dataset.state = min ? 'min' : 'open';
+    el.querySelector('#mm-avatar').setAttribute('aria-expanded', String(!min));
+    el.querySelector('#mm-avatar').setAttribute('aria-label', min ? 'Mimar, your architect guide: show tips' : 'Next tip from Mimar');
+    if (!silent) store.set('buildme.mimar', min ? 'min' : 'open');
+    el.querySelector('#mm-badge').hidden = !min;
+    schedule();
+  }
+  function mood(m, svgRoot) {
+    const svg = (svgRoot || G.el).querySelector('svg.mm'); if (!svg) return;
+    svg.setAttribute('class', 'mm mood-' + m);
+  }
+  function poke() { const a = G.el.querySelector('.mm-avatar'); a.classList.remove('poke'); void a.offsetWidth; a.classList.add('poke'); }
+  function typeText(node, text) {
+    clearInterval(G.typing);
+    if (reduce()) { node.textContent = text; return; }
+    node.textContent = ''; let i = 0; const step = Math.max(1, Math.round(text.length / 60));
+    G.typing = setInterval(() => { i += step; node.textContent = text.slice(0, i); if (i >= text.length) clearInterval(G.typing); }, 18);
+  }
+  function show(f, kicker) {
+    const el = G.el; if (!el) return; G.cur = f; G.shownAnswer = false;
+    el.querySelector('#mm-kicker').textContent = kicker || (f ? CATS[f.cat] : 'Mimar says');
+    typeText(el.querySelector('#mm-text'), f ? f.tip || f.q : kicker);
+    const a = el.querySelector('#mm-answer'); a.hidden = true; a.innerHTML = '';
+    const b = el.querySelector('#mm-ans'); b.hidden = !f; b.textContent = 'Tell me more';
+    mood(f ? (Math.random() < 0.5 ? 'idea' : 'happy') : 'wave');
+    const bubble = el.querySelector('.mm-bubble'); bubble.classList.remove('pop'); void bubble.offsetWidth; bubble.classList.add('pop');
+    schedule();
+  }
+  function toggleAnswer() {
+    const el = G.el, f = G.cur; if (!f) return; const a = el.querySelector('#mm-answer');
+    G.shownAnswer = !G.shownAnswer; a.hidden = !G.shownAnswer;
+    if (G.shownAnswer) { a.innerHTML = `<b>${esc(f.q)}</b><div>${ans(f)}</div>`; mood('think'); }
+    el.querySelector('#mm-ans').textContent = G.shownAnswer ? 'Hide' : 'Tell me more';
+    schedule();
+  }
+  function next() {
+    if (!G.deck.length) G.deck = shuffle(forScreen(G.screen)).filter(f => !G.cur || f.id !== G.cur.id);
+    show(G.deck.shift());
+  }
+  function schedule() {
+    clearTimeout(G.timer); const bar = G.el && G.el.querySelector('#mm-bar'); if (!bar) return;
+    bar.style.animation = 'none'; void bar.offsetWidth;
+    if (G.el.dataset.state === 'min' || G.shownAnswer) { bar.style.animation = 'none'; return; }
+    bar.style.animation = `mm-timer ${ROTATE_MS}ms linear forwards`;
+    G.timer = setTimeout(function tick() { if (G.paused || document.hidden) { G.timer = setTimeout(tick, 1500); return; } next(); }, ROTATE_MS);
+  }
+  function setScreen(screen) {
+    mountGuide(); if (G.screen === screen && G.cur) return; G.screen = screen; G.deck = [];
+    G.el.dataset.screen = screen;
+    show(null, GREET[screen] || GREET.dashboard);
+    G.el.querySelector('#mm-kicker').textContent = 'Mimar says';
+    clearTimeout(G.timer); G.timer = setTimeout(() => next(), 6000);
+    // busy screens: say hello, then tuck into the corner unless the user is reading
+    clearTimeout(G.tuck);
+    if ((screen === 'design' || window.innerWidth < 1100) && G.el.dataset.state !== 'min') G.tuck = setTimeout(() => { if (!G.paused && !G.shownAnswer) { G.el.dataset.state = 'min'; G.el.querySelector('#mm-badge').hidden = false; schedule(); } }, 7000);
+  }
+  function say(text, m) { mountGuide(); show(null, text); G.el.querySelector('#mm-kicker').textContent = 'Mimar says'; if (m) mood(m); if (G.el.dataset.state === 'min') { const b = G.el.querySelector('#mm-badge'); b.hidden = false; poke(); } }
+  function hideGuide(h) { if (G.el) G.el.classList.toggle('away', !!h); }
+
+  // ---------------------------------------------------------------------------
+  // Quick-answer cards (side panels on several screens)
+  // ---------------------------------------------------------------------------
+  function mountQuick(host, screen, opts) {
+    if (!host) return; opts = opts || {};
+    const n = opts.n || 4; let pool = shuffle(forScreen(screen));
+    const draw = () => {
+      const items = pool.slice(0, n); pool = pool.slice(n).concat(items);
+      host.innerHTML = `<div class="card card-pad quick-faq">
+        <div class="qf-head"><span class="qf-face">${mimarSVG('mood-happy mini')}</span><div><b>${esc(opts.title || 'Quick answers')}</b><div class="hint">${esc(opts.sub || 'Mimar answers common questions')}</div></div>
+          <button class="btn sm ghost qf-more" type="button" aria-label="Show other questions" title="Other questions"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5"/></svg></button></div>
+        <div class="qf-list">${items.map(f => `<details class="faq-item"><summary>${esc(f.q)}</summary><div class="faq-a">${ans(f)}</div></details>`).join('')}</div>
+        <a class="btn link" href="#help" data-route="help">All questions</a></div>`;
+      const list = host.querySelector('.qf-list'); if (!reduce()) { list.classList.remove('in'); void list.offsetWidth; list.classList.add('in'); }
+      host.querySelector('.qf-more').addEventListener('click', draw);
+    };
+    draw();
+  }
+
+  // ---------------------------------------------------------------------------
+  // Help page (route #help)
+  // ---------------------------------------------------------------------------
+  function mountHelpPage(host) {
+    if (!host || host.dataset.ready) return; host.dataset.ready = '1';
+    host.innerHTML = `
+      <div class="card help-hero">
+        <div class="help-hero-main">
+          <span class="lab">Help &amp; FAQ</span>
+          <h2>Ask Mimar</h2>
+          <p>Answers about plots, CDA bylaws, layouts, costs and downloads. Type a few words or pick a topic.</p>
+          <div class="help-search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input type="search" id="faq-q" placeholder="e.g. setbacks, servant room, DWG, how many bedrooms" aria-label="Search questions"></div>
+          <div class="chips" id="faq-cats" role="group" aria-label="Topics"></div>
+        </div>
+        <div class="help-hero-art">${mimarSVG('mood-wave big')}<div class="help-speech" id="help-speech">Tap me for a random tip!</div></div>
+      </div>
+      <div class="help-grid">
+        <div class="faq-list" id="faq-list"></div>
+        <aside class="help-side">
+          <div class="card card-pad"><h3>How many bedrooms fit?</h3>${fitsTable()}</div>
+          <div class="card card-pad tip-of-day"><span class="lab">Tip of the moment</span><p id="tip-now"></p><button class="btn sm soft" id="tip-next" type="button">Another tip</button></div>
+        </aside>
+      </div>`;
+    let cat = 'all', q = '';
+    const cats = host.querySelector('#faq-cats');
+    cats.innerHTML = [['all', 'All']].concat(Object.entries(CATS)).map(([k, v]) => `<button type="button" data-c="${k}" aria-pressed="${k === 'all'}">${esc(v)}</button>`).join('');
+    cats.addEventListener('click', e => { const b = e.target.closest('[data-c]'); if (!b) return; cat = b.dataset.c; cats.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); render(); });
+    host.querySelector('#faq-q').addEventListener('input', e => { q = e.target.value.trim().toLowerCase(); render(); });
+    const strip = h => String(h).replace(/<[^>]+>/g, ' ');
+    function render() {
+      const words = q.split(/\s+/).filter(Boolean);
+      const list = FAQ.filter(f => (cat === 'all' || f.cat === cat) && (!words.length || words.every(w => (f.q + ' ' + strip(ans(f)) + ' ' + (f.tip || '')).toLowerCase().includes(w))));
+      const el = host.querySelector('#faq-list');
+      if (!list.length) { el.innerHTML = `<div class="empty-state">${mimarSVG('mood-think mini')}<p>Mimar has no answer for “${esc(q)}” yet. Try other words, or browse all topics.</p></div>`; return; }
+      const groups = {}; list.forEach(f => (groups[f.cat] = groups[f.cat] || []).push(f));
+      el.innerHTML = Object.entries(groups).map(([c, fs]) => `<section class="faq-group"><h3>${esc(CATS[c])}</h3>${fs.map((f, i) => `<details class="faq-item" style="--i:${i}" ${words.length && i === 0 ? 'open' : ''}><summary>${esc(f.q)}</summary><div class="faq-a">${ans(f)}</div></details>`).join('')}</section>`).join('');
+    }
+    render();
+    const tips = shuffle(FAQ); let ti = 0;
+    const tip = () => { const f = tips[ti++ % tips.length]; host.querySelector('#tip-now').textContent = f.tip || f.q; };
+    tip(); host.querySelector('#tip-next').addEventListener('click', tip);
+    const art = host.querySelector('.help-hero-art'); const sp = host.querySelector('#help-speech');
+    art.addEventListener('click', () => { const f = tips[ti++ % tips.length]; sp.textContent = f.tip || f.q; sp.classList.remove('pop'); void sp.offsetWidth; sp.classList.add('pop'); const s = art.querySelector('svg.mm'); s.setAttribute('class', 'mm big mood-' + (['idea', 'happy', 'wave', 'think'][ti % 4])); });
+  }
+  function openFaq(id) {
+    location.hash = '#help';
+    setTimeout(() => { const host = document.getElementById('faq-list'); if (!host) return; const f = byId[id]; if (!f) return;
+      const it = [...host.querySelectorAll('.faq-item')].find(d => d.querySelector('summary').textContent === f.q);
+      if (it) { it.open = true; it.scrollIntoView({ behavior: reduce() ? 'auto' : 'smooth', block: 'center' }); it.classList.add('flash'); setTimeout(() => it.classList.remove('flash'), 1600); } }, 120);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Animated pop-up ("oops") — used when a brief can't be designed, and for other errors
+  // ---------------------------------------------------------------------------
+  let lastFocus = null;
+  function oops(o) {
+    close(true); lastFocus = document.activeElement;
+    const kind = o.kind || 'bad'; // bad | info
+    const back = document.createElement('div'); back.className = 'oops-back ' + kind; back.id = 'oops';
+    const house = `<svg class="oops-house" viewBox="0 0 160 110" aria-hidden="true">
+        <path d="M6 104h148" stroke="#C9D7E6" stroke-width="3" stroke-linecap="round"/>
+        <g class="blk b1"><rect x="34" y="78" width="30" height="24" rx="2"/></g><g class="blk b2"><rect x="66" y="78" width="30" height="24" rx="2"/></g><g class="blk b3"><rect x="98" y="78" width="28" height="24" rx="2"/></g>
+        <g class="blk b4"><rect x="40" y="52" width="40" height="24" rx="2"/></g><g class="blk b5"><rect x="82" y="52" width="38" height="24" rx="2"/></g>
+        <g class="blk b6 odd"><rect x="58" y="26" width="58" height="24" rx="2"/><text x="87" y="43" text-anchor="middle">?</text></g>
+        <g class="crane"><path d="M140 104V12h-62" stroke="#1E6FD9" stroke-width="3" fill="none" stroke-linejoin="round"/><path class="hook" d="M100 12v9" stroke="#0F2A43" stroke-width="1.6"/></g>
+      </svg>`;
+    const reasons = (o.reasons || []).map((r, i) => `<li style="--i:${i}"><span class="ri">${r.icon || (kind === 'info' ? 'i' : '!')}</span><div><b>${esc(r.title)}</b>${r.text ? `<span>${esc(r.text)}</span>` : ''}</div></li>`).join('');
+    const fixes = (o.fixes || []).map((f, i) => `<button type="button" class="btn ${i === 0 ? 'primary' : ''}" data-fix="${i}" style="--i:${i}">${esc(f.label)}</button>`).join('');
+    const faqs = (o.faqs || []).map(id => byId[id]).filter(Boolean).map(f => `<details class="faq-item"><summary>${esc(f.q)}</summary><div class="faq-a">${ans(f)}</div></details>`).join('');
+    back.innerHTML = `<div class="oops-card" role="alertdialog" aria-modal="true" aria-labelledby="oops-t" aria-describedby="oops-l">
+      <button class="oops-x" type="button" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      <div class="oops-stage">${kind === 'bad' ? house : ''}<div class="oops-mm">${mimarSVG(kind === 'bad' ? 'mood-oops' : 'mood-idea')}</div></div>
+      <div class="oops-body">
+        <span class="lab">${esc(o.kicker || (kind === 'bad' ? 'Mimar couldn’t fit it' : 'Mimar adjusted your brief'))}</span>
+        <h2 id="oops-t">${esc(o.title)}</h2>
+        ${o.lead ? `<p id="oops-l" class="oops-lead">${esc(o.lead)}</p>` : '<p id="oops-l" hidden></p>'}
+        ${reasons ? `<ul class="oops-reasons">${reasons}</ul>` : ''}
+        ${fixes ? `<div class="oops-fixes"><span class="lab">${esc(o.fixLabel || 'Try one of these')}</span><div class="row">${fixes}</div></div>` : ''}
+        ${faqs ? `<div class="oops-faq"><span class="lab">Related questions</span>${faqs}</div>` : ''}
+        <div class="oops-foot"><button type="button" class="btn ghost" data-close>${esc(o.closeLabel || 'Close')}</button>${o.help !== false ? '<a class="btn link" href="#help" data-route="help" data-close>Open Help &amp; FAQ</a>' : ''}</div>
+      </div></div>`;
+    document.body.appendChild(back); hideGuide(true);
+    requestAnimationFrame(() => back.classList.add('in'));
+    back.addEventListener('click', e => {
+      if (e.target === back || e.target.closest('.oops-x') || e.target.closest('[data-close]')) { close(); return; }
+      const b = e.target.closest('[data-fix]'); if (b) { const f = o.fixes[+b.dataset.fix]; close(); setTimeout(() => f.run(), 160); }
+    });
+    back.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { e.preventDefault(); close(); }
+      if (e.key === 'Tab') { const f = [...back.querySelectorAll('button,a,summary')].filter(x => x.offsetParent); if (!f.length) return; const a = f[0], z = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === a) { e.preventDefault(); z.focus(); } else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); a.focus(); } }
+    });
+    setTimeout(() => { const t = back.querySelector('[data-fix="0"]') || back.querySelector('.oops-x'); if (t) t.focus({ preventScroll: true }); }, 60);
+    return back;
+  }
+  function close(instant) {
+    const back = document.getElementById('oops'); if (!back) return;
+    hideGuide(false);
+    if (instant || reduce()) back.remove(); else { back.classList.remove('in'); back.classList.add('out'); setTimeout(() => back.remove(), 260); }
+    if (lastFocus && lastFocus.focus && document.contains(lastFocus)) try { lastFocus.focus({ preventScroll: true }); } catch (e) { }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Toast — small, self-dismissing note with Mimar's face
+  // ---------------------------------------------------------------------------
+  function toast(o) {
+    let host = document.getElementById('toasts'); if (!host) { host = document.createElement('div'); host.id = 'toasts'; host.className = 'toasts'; host.setAttribute('aria-live', 'polite'); document.body.appendChild(host); }
+    const t = document.createElement('div'); t.className = 'toast ' + (o.kind || 'info');
+    t.innerHTML = `<span class="t-face">${mimarSVG('mini mood-' + (o.mood || (o.kind === 'bad' ? 'oops' : 'happy')))}</span><div class="t-txt">${o.title ? `<b>${esc(o.title)}</b>` : ''}<span>${esc(o.text || '')}</span></div>${o.action ? `<button type="button" class="btn sm soft">${esc(o.action.label)}</button>` : ''}<button type="button" class="t-x" aria-label="Dismiss"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>`;
+    host.appendChild(t); requestAnimationFrame(() => t.classList.add('in'));
+    const kill = () => { t.classList.remove('in'); setTimeout(() => t.remove(), 300); };
+    t.querySelector('.t-x').addEventListener('click', kill);
+    if (o.action) t.querySelector('.btn').addEventListener('click', () => { kill(); o.action.run(); });
+    setTimeout(kill, o.ms || 8000);
+    return t;
+  }
+
+  root.BuildMeHelp = { FAQ, CATS, FITS, byId, forScreen, mimarSVG, mountGuide, setScreen, say, mood, hideGuide, mountQuick, mountHelpPage, openFaq, oops, close, toast };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
 /* BuildMe — application shell: dashboard, design assistant, guided questions, workspace, projects, tools */
 (function () {
   'use strict';
-  const P = window.BuildMe, V = window.BuildMeRender, M3 = window.BuildMe3D, X = window.BuildMeExport;
+  const P = window.BuildMe, V = window.BuildMeRender, M3 = window.BuildMe3D, X = window.BuildMeExport, H = window.BuildMeHelp;
   const $ = s => document.querySelector(s);
   const $$ = s => Array.from(document.querySelectorAll(s));
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -2446,7 +3160,7 @@ details.regs[open] summary::after{content:"–"}
   };
 
   // ======================= ROUTING =======================
-  const TITLES = { dashboard: 'Dashboard', new: 'New design', design: 'Design workspace', projects: 'My projects', plots: 'Plot sizes', cost: 'Cost estimator', bylaws: 'CDA bylaws' };
+  const TITLES = { dashboard: 'Dashboard', new: 'New design', design: 'Design workspace', projects: 'My projects', plots: 'Plot sizes', cost: 'Cost estimator', bylaws: 'CDA bylaws', help: 'Help & FAQ' };
   function go(route, opt) {
     if (route === 'design' && !st.cur) route = 'new';
     st.route = route;
@@ -2462,8 +3176,16 @@ details.regs[open] summary::after{content:"–"}
     if (route === 'plots' && !catDone) buildCatalogue();
     if (route === 'cost') renderEstimator();
     if (route === 'design') { renderResults(); }
+    if (H) {
+      if (route === 'help') H.mountHelpPage($('#help-page'));
+      const qa = { dashboard: ['#quick-dash', 'Questions people ask', 'Tap a question for Mimar\u2019s answer'], new: ['#quick-new', 'Quick answers', 'About plots, bylaws and what fits'], design: ['#quick-design', 'Quick answers', 'About this layout and downloads'],
+        projects: ['#quick-projects', 'Quick answers', 'About saving and files'], plots: ['#quick-plots', 'Quick answers', 'About plot sizes'], cost: ['#quick-cost', 'Quick answers', 'About the estimate'], bylaws: ['#quick-bylaws', 'Quick answers', 'About CDA rules'] }[route];
+      if (qa) H.mountQuick($(qa[0]), route, { title: qa[1], sub: qa[2], n: route === 'dashboard' ? 6 : 4 });
+      H.setScreen(route);
+    }
     window.scrollTo({ top: 0 });
   }
+  window.addEventListener('hashchange', () => { const h = (location.hash || '').replace('#', ''); if (TITLES[h] && h !== st.route) go(h); });
   document.addEventListener('click', e => { const b = e.target.closest('[data-route]'); if (b && !b.closest('[data-view="bylaws"] a')) { e.preventDefault(); go(b.dataset.route); } });
   const side = $('#side'), scrim = $('#scrim');
   function closeMenu() { side.classList.remove('open'); scrim.hidden = true; }
@@ -2609,8 +3331,9 @@ details.regs[open] summary::after{content:"–"}
   }
   $('#custom-go').addEventListener('click', () => {
     const w = Math.round(+$('#cw').value), d = Math.round(+$('#cd').value); const m = $('#plot-msg');
-    if (!(w >= 20 && w <= 120)) { m.textContent = 'Enter a width between 20 and 120 ft.'; m.className = 'msg err'; $('#cw').focus(); return; }
-    if (!(d >= 30 && d <= 200)) { m.textContent = 'Enter a depth between 30 and 200 ft.'; m.className = 'msg err'; $('#cd').focus(); return; }
+    if (!(w >= 20 && w <= 120)) { m.textContent = 'Enter a width between 20 and 120 ft.'; m.className = 'msg err'; $('#cw').focus(); if (H) H.toast({ kind: 'bad', title: 'That width won\u2019t work', text: 'BuildMe designs plots 20\u2013120 ft wide (the side facing the road).' }); return; }
+    if (!(d >= 30 && d <= 200)) { m.textContent = 'Enter a depth between 30 and 200 ft.'; m.className = 'msg err'; $('#cd').focus(); if (H) H.toast({ kind: 'bad', title: 'That depth won\u2019t work', text: 'BuildMe designs plots 30\u2013200 ft deep.' }); return; }
+    if (w < 25 && H) H.toast({ title: 'Narrow plot', text: 'Under 25 ft wide, BuildMe puts the bedrooms upstairs \u2014 choose double storey on the next step.', mood: 'think' });
     choosePlot({ id: w + 'x' + d, w, d, sqft: w * d, sqyd: Math.round(w * d / 9), common: (w * d / 225).toFixed(1) + ' Marla', custom: true });
     m.textContent = `Using ${w} × ${d} ft.`; m.className = 'msg ok';
   });
@@ -2701,11 +3424,59 @@ details.regs[open] summary::after{content:"–"}
     if (newSeed) st.seed = (st.seed * 1103515245 + 12345) >>> 0;
     if (st.route !== 'new') go('new', { step: st.step });
     $$('[data-step]').forEach(c => c.hidden = true); $('#working').hidden = false;
+    if (H) { const f = H.FAQ[Math.floor(Math.random() * H.FAQ.length)]; $('#working').innerHTML = `<span class="w-mm">${H.mimarSVG('mood-think')}</span><div><b>Mimar is drawing layouts that fit your plot\u2026</b><span class="hint">Did you know? ${esc(f.tip || f.q)}</span></div>`; }
     setTimeout(() => {
-      st.options = P.generate(st.plot, Object.assign({}, st.opts, { corner: st.corner }), st.rules, st.seed, 100);
-      $('#working').hidden = true; $('#nav-design').hidden = false;
+      const diag = {}; let err = null;
+      try { st.options = P.generate(st.plot, Object.assign({}, st.opts, { corner: st.corner }), st.rules, st.seed, 100, diag); }
+      catch (e) { st.options = []; err = e; if (window.console) console.error(e); }
+      $('#working').hidden = true;
+      if (!st.options.length) { goStep(3, true); explainNoFit(diag, err); return; }
+      $('#nav-design').hidden = false;
       loadOption(0); go('design');
+      const notes = (st.options[0].notes || []).filter((v, i, a) => a.indexOf(v) === i && !/^First floor:/.test(v));
+      if (H && notes.length) H.toast({ title: `Mimar adjusted ${notes.length} thing${notes.length > 1 ? 's' : ''} to make it fit`, text: notes[0], action: { label: 'Why?', run: () => explainAdjust(notes) }, ms: 9000 });
+      else if (H) H.say(`${st.options.length} layout${st.options.length > 1 ? 's' : ''} fit your plot. Click one to compare, then try the 3D tab.`, 'happy');
     }, 30);
+  }
+
+  // ---------- explaining failures and adjustments (Mimar pop-ups) ----------
+  function fitFacts() {
+    const R = st.rules, p = st.plot; const W = p.w - R.sideL - R.sideR, D = p.d - R.front - R.rear;
+    return { W, D, cov: Math.round(R.cov * p.sqft), far: Math.round(R.far * p.sqft) };
+  }
+  function explainNoFit(diag, err) {
+    if (!H) { alert('No layout fits these answers. Try fewer rooms or double storey.'); return; }
+    const o = st.opts, p = st.plot, f = fitFacts(); const reasons = []; const fx = P.fmt;
+    const keys = Object.keys(diag || {}).filter(k => typeof diag[k] === 'number');
+    const has = re => keys.some(k => re.test(k));
+    if (err) reasons.push({ title: 'Something went wrong while designing', text: String(err.message || err).slice(0, 140) });
+    if (has(/^scheme$/) || f.W < 16) reasons.push({ title: `Only ${fx(Math.max(0, f.W))} of buildable width`, text: `After side setbacks the house can be at most ${fx(Math.max(0, f.W))} wide; BuildMe needs at least 16'-0" for a room beside the stairs.` });
+    if (has(/middle row/)) reasons.push({ title: 'Lounge, kitchen and stairs don\u2019t fit across', text: `With the bedrooms you asked for, the middle row needs more than the ${fx(f.W)} the house can be wide.` });
+    if (has(/front row/)) reasons.push({ title: 'The front row is too crowded', text: `The car porch (${o.cars >= 2 ? '18\'-6"' : '10\'-6"'} wide) plus the rooms beside it need more than ${fx(f.W)}.` });
+    if (has(/rear row/)) reasons.push({ title: 'The bedrooms don\u2019t fit across the back', text: `Each bedroom with its bath needs about 15 ft of width; ${fx(f.W)} isn\u2019t enough for that many in one row.` });
+    if (has(/^depth$/)) reasons.push({ title: 'Not enough depth within the coverage limit', text: `The ground floor may cover ${f.cov.toLocaleString('en-PK')} ft\u00b2 (${Math.round(st.rules.cov * 100)}%), which leaves too little depth for every row.` });
+    if (has(/^unreach/)) reasons.push({ title: 'Some rooms ended up without a door', text: 'Every arrangement tried left a room reachable only through another room.' });
+    if (!reasons.length) reasons.push({ title: 'The brief needs more space than CDA allows here', text: `Ground floor max ${f.cov.toLocaleString('en-PK')} ft\u00b2, total max ${f.far.toLocaleString('en-PK')} ft\u00b2.` });
+    const fixes = []; const redo = ch => () => { Object.assign(st.opts, ch); if (st.opts.gfBeds > st.opts.beds) st.opts.gfBeds = st.opts.beds; saveAnswers(); design(); };
+    if (o.storeys === 1) fixes.push({ label: 'Make it double storey', run: redo({ storeys: 2, gfBeds: Math.min(1, o.beds) }) });
+    if (o.beds > 1) fixes.push({ label: `Try ${o.beds - 1} bedroom${o.beds - 1 > 1 ? 's' : ''}`, run: redo({ beds: o.beds - 1 }) });
+    if (o.drawing) fixes.push({ label: 'Without the drawing room', run: redo({ drawing: false }) });
+    if (o.cars >= 2) fixes.push({ label: 'One-car porch', run: redo({ cars: 1 }) });
+    if (o.dining) fixes.push({ label: 'Dining in the lounge', run: redo({ dining: false }) });
+    if (p.w < 25) fixes.push({ label: 'Use a 25 \u00d7 50 plot instead', run: () => { const q = P.PLOTS.find(x => x.id === '25x50'); st.plot = q; st.rules = P.cdaRules(q); st.opts.storeys = 2; renderPlotChoices(); renderAllow(); saveAnswers(); design(); } });
+    H.oops({
+      title: `No layout fits ${p.w} \u00d7 ${p.d} with this brief`,
+      lead: `I tried hundreds of arrangements for ${o.storeys === 2 ? 'a double' : 'a single'} storey with ${o.beds} bedroom${o.beds > 1 ? 's' : ''}${o.drawing ? ', a drawing room' : ''}${o.dining ? ', separate dining' : ''}. Here\u2019s what got in the way:`,
+      reasons: reasons.slice(0, 4), fixes: fixes.slice(0, 4), faqs: p.w < 25 ? ['narrow', 'howmany', 'nofit'] : ['nofit', 'howmany', 'order'],
+      closeLabel: 'Change my answers',
+    });
+  }
+  function explainAdjust(notes) {
+    if (!H) return;
+    H.oops({ kind: 'info', title: 'Here\u2019s what I changed, and why', lead: `Your full brief didn\u2019t fit ${st.plot.w} \u00d7 ${st.plot.d} under CDA rules, so I made the gentlest changes that work:`,
+      reasons: notes.map(n => ({ title: n })), fixLabel: 'Prefer something else?',
+      fixes: [{ label: 'Change my answers', run: () => go('new', { step: 1 }) }].concat(st.opts.storeys === 1 ? [{ label: 'Try double storey', run: () => { st.opts.storeys = 2; st.opts.gfBeds = Math.min(1, st.opts.beds); saveAnswers(); design(); } }] : []),
+      faqs: ['order', 'fewer', 'howmany'], closeLabel: 'Keep these layouts' });
   }
   $('#change').addEventListener('click', () => go('new', { step: 3 }));
   $('#more-opts').addEventListener('click', () => design(true));
@@ -2796,7 +3567,8 @@ details.regs[open] summary::after{content:"–"}
     $('#proj-name').value = st.projectName;
     $('#res-sub').textContent = `${st.plot.w} × ${st.plot.d} · ${st.plot.common} · ${p.floors.length > 1 ? 'double' : 'single'} storey · ${p.stats.beds} bedrooms · road on the ${FACING[st.facing]}${st.projectId ? ' · saved project' : ''}`;
     const nts = (p.notes || []).filter((v, i, a) => a.indexOf(v) === i);
-    $('#notes').hidden = !nts.length; $('#notes').textContent = nts.length ? 'Adjusted to fit: ' + nts.join(' ') : '';
+    $('#notes').hidden = !nts.length; $('#notes').innerHTML = nts.length ? 'Adjusted to fit: ' + esc(nts.join(' ')) + ' <button class="btn link" type="button" id="notes-why">Why?</button>' : '';
+    if (nts.length) $('#notes-why').addEventListener('click', () => explainAdjust(nts));
     if (st.floor >= p.floors.length + (p.floors.length > 1 ? 1 : 0)) st.floor = 0;
     const tabs = p.floors.map((f, i) => i ? 'First floor' : 'Ground floor'); if (p.floors.length > 1) tabs.push('Roof');
     $('#floor-tabs').innerHTML = tabs.map((t, i) => `<button role="tab" aria-selected="${i === st.floor}" data-f="${i}">${t}</button>`).join('');
@@ -2846,12 +3618,14 @@ details.regs[open] summary::after{content:"–"}
     if (p.floors[0].rooms.some(r => r.skylight)) tips.push({ t: 'Lounge needs a skylight', d: 'The TV lounge has no outside wall, so it relies on a skylight. Swap it with a room on the front or rear row for a window.', a: ['edit', 'Customise'] });
     warns.forEach(w => tips.push({ k: 'warn', t: w.label, d: w.detail }));
     p.floors.forEach((f, fi) => f.issues.forEach(i => tips.push({ t: (fi ? 'First floor: ' : 'Ground floor: ') + i, d: 'Try mirroring the layout or swapping it with a room on an outside wall.', a: ['edit', 'Customise'] })));
+    if (p.floors[0].rooms.some(r => r.kitchenEntry)) tips.push({ k: 'warn', t: 'Kitchen door from the porch', d: 'On this tight plot the kitchen opens from the porch. Pick another layout or drop a room for a separate entrance.', a: ['faq:kitchenentry', 'Why?'] });
+    if (p.notes && p.notes.length) tips.push({ t: 'Brief adjusted to fit', d: p.notes.slice(0, 2).join(' '), a: ['why', 'See what changed'] });
     const sun = { N: 'Road on the north: front rooms stay cool and evenly lit — large front windows work well.', S: 'Road on the south: the front gets strong sun. Deep sunshades (Contemporary style) keep front rooms cooler.', E: 'Road on the east: morning sun on the front. Bedrooms at the back stay cooler in the evening.', W: 'Road on the west: harsh afternoon sun on the front. Use sunshades or louvers (Modern style) on front windows.' };
     tips.push({ t: 'Orientation', d: sun[st.facing] });
     if (v3style === 'massing') tips.push({ t: 'Pick an elevation style', d: 'See the house in Modern, Spanish, French and other Pakistani styles, and include its finish in the cost.', a: ['3d', 'Open 3D & styles'] });
     if (!st.projectId || st.dirty) tips.push({ t: st.projectId ? 'Unsaved changes' : 'Save this design', d: 'Save it to your projects to compare designs from the dashboard later.', a: ['save', 'Save project'] });
     $('#tips').innerHTML = tips.slice(0, 7).map(x => `<li class="${x.k || ''}"><b>${esc(x.t)}</b><span>${esc(x.d)}</span>${x.a ? `<button class="btn sm soft act" data-tip="${x.a[0]}">${esc(x.a[1])}</button>` : ''}</li>`).join('');
-    $$('#tips [data-tip]').forEach(b => b.addEventListener('click', () => { const a = b.dataset.tip; if (a === 'save') saveProject(); else selectTab(a); }));
+    $$('#tips [data-tip]').forEach(b => b.addEventListener('click', () => { const a = b.dataset.tip; if (a === 'save') saveProject(); else if (a === 'why') explainAdjust((p.notes || []).filter((v, i, x) => x.indexOf(v) === i)); else if (a.startsWith('faq:') && H) H.openFaq(a.slice(4)); else selectTab(a); }));
   }
   function renderChecks(p) {
     const bad = p.checks.filter(c => c.s === 'bad').length, warn = p.checks.filter(c => c.s === 'warn').length;
@@ -3137,7 +3911,7 @@ details.regs[open] summary::after{content:"–"}
   } catch (e) { }
   renderPlotChoices(); renderFacing(); renderAllow(); updateCount(); estInit();
   const h = (location.hash || '').replace('#', '');
-  go(['new', 'projects', 'plots', 'cost', 'bylaws'].includes(h) ? h : 'dashboard');
+  go(['new', 'projects', 'plots', 'cost', 'bylaws', 'help'].includes(h) ? h : 'dashboard');
 })();
 
 </script>
