@@ -205,7 +205,7 @@
       if (rest < 3) out.push(mk(bt, sx, y, sw, h, { owner: main.id }));
       else {
         out.push(mk(bt, sx, bathTop ? y : y + rest, sw, bd, { owner: main.id }));
-        out.push(mk(bt === 'powder' ? 'store' : 'dress', sx, bathTop ? y + bd : y, sw, rest, { owner: main.id, wr: !it.dress || rest < 5 }));
+        out.push(mk(bt === 'powder' || bt === 'sbath' ? 'store' : 'dress', sx, bathTop ? y + bd : y, sw, rest, { owner: main.id, wr: !it.dress || rest < 5 }));
       }
       return out;
     }
@@ -287,19 +287,38 @@
     M.push(k >= 2 ? stack([room('kitchen', T.kitchen), room('store', T.store, { minW: 3 })], { flip: R_() < 0.5 }) : room('kitchen', T.kitchen));
     const st = stairCol(S.sw, !opts.drawing && W >= 30 ? 'powder' : 'store'); st.stairTop = R_() < 0.5; M.push(st);
     for (; placed < gfBeds; placed++) R.push(bedItem(T.bed));
-    if (k >= 3) R.push(room('study', T.study));
-    if (opts.servant || rules.servantRequired) R.push(stack([room('servant', T.servant, { minW: 9.5 }), room('sbath', 28, { minW: 3.75 })], { flip: R_() < 0.5 }));
+    if (k >= 3 && (opts.storeys >= 2 || gfBeds <= 3)) R.push(room('study', T.study));
+    if (opts.servant || rules.servantRequired) R.push(suite('servant', T.servant, { minW: 10, sideW: 5, bathD: 6.75, bathType: 'sbath', sideLeft: R_() < 0.5, bathTop: R_() < 0.5 }));
 
-    const minF = Math.max(11.5, dIn), minM = 13, minR = 10.5;
+    // the front row must hold something beside the porch: bring the kitchen (or dining) forward
+    if (F.length === 1) {
+      const ki = M.findIndex(it => it.t === 'dining') >= 0 && fRoom >= 9.5 ? M.findIndex(it => it.t === 'dining') : M.findIndex(it => it.t === 'kitchen');
+      if (ki >= 0) F.push(M.splice(ki, 1)[0]); else F.push(room('foyer', 60, { minW: 4 }));
+    }
+    const minF = Math.max(11.5, dIn), minM = k <= 1 ? 12.5 : 13, minR = k <= 1 ? 9.5 : 10.5;
     const covD = (rules.cov * plot.sqft + (dIn > 0 ? pw * dIn : 0)) / W;
     const Dmax = Math.floor(Math.min(E.Davail, covD) * 2) / 2; S.Dmax = Dmax;
     const wMin = its => its.reduce((s, it) => s + itemMinW(it, S), 0);
     let bands;
     if (R.length && Dmax >= minF + minM + minR) {
       if (wMin(R) > W && Dmax >= minF + minM + minR * 2) {
-        const R1 = [], R2 = [];
-        R.slice().sort((a, b) => itemMinW(b, S) - itemMinW(a, S)).forEach(it => { (wMin(R1) + itemMinW(it, S) <= W - 4.5 && wMin(R1) <= wMin(R2) ? R1 : R2).push(it); });
-        bands = [{ id: 'F', items: F }, { id: 'M', items: M }, { id: 'Q', items: R1 }, { id: 'R', items: R2 }];
+        // pack the rear rooms into as few rows as possible. Every rear row keeps a 4'-6" spine passage
+        // except the last one, which opens straight onto the corridor in front of it.
+        const corridors = n => 1 + Math.ceil((n - 1) / 2);
+        let maxRows = 2; while ((maxRows + 1) * minR + corridors(maxRows + 1) * 4 <= Dmax - minF - minM) maxRows++;
+        const sorted = R.slice().sort((a, b) => itemMinW(b, S) - itemMinW(a, S));
+        const pack = n => {
+          const caps = Array.from({ length: n }, (_, i) => i === n - 1 ? W : W - 4.5); const rws = caps.map(() => []); let over = false;
+          sorted.forEach(it => { const wv = itemMinW(it, S); let bi = -1; rws.forEach((rw, i) => { if (wMin(rw) + wv <= caps[i] + 0.01 && (bi < 0 || caps[i] - wMin(rw) < caps[bi] - wMin(rws[bi]))) bi = i; }); if (bi < 0) { over = true; bi = n - 1; } rws[bi].push(it); });
+          return { rws, over };
+        };
+        let rows = null;
+        for (let n = 2; n <= maxRows; n++) { const pk = pack(n); rows = pk.rws; if (!pk.over) break; }
+        if (!rows) rows = pack(2).rws;
+        // keep the fullest rows at the front, the last (no-spine) row widest
+        rows = rows.filter(rw => rw.length);
+        while (rows.length < 2) rows.push([]);
+        bands = [{ id: 'F', items: F }, { id: 'M', items: M }].concat(rows.map((rw, i) => ({ id: i === rows.length - 1 ? 'R' : 'Q', items: rw })));
       } else bands = [{ id: 'F', items: F }, { id: 'M', items: M }, { id: 'R', items: R }];
     } else bands = [{ id: 'F', items: F }, { id: 'M', items: M.concat(R) }];
     const mins = { F: minF, M: minM, Q: minR, R: minR, C: 4 };
@@ -323,10 +342,31 @@
     const spare = S.E.W - last.items.reduce((s, it) => s + itemMinW(it, S), 0);
     if (spare >= 7 && r() < 0.6) { const p = r(); last.items.push(room(p < 0.55 ? 'court' : p < 0.8 ? 'laundry' : 'study', Math.min(spare, 12) * 11, { minW: p < 0.55 ? 6 : 5 })); }
     for (let i = 1; i < b.length; i++) b[i].items = shuffle(b[i].items, r);
+    // either: circulation rooms in the middle with kitchen / stair on each side (all reachable) …
+    const pick = r();
+    if (pick < 0.45) {
+      const Mi = b[1].items, isC = it => it.kind === 'room' && RT[it.t].circ;
+      const circ = Mi.filter(isC), nc = Mi.filter(it => !isC(it));
+      if (circ.length && nc.length >= 2) b[1].items = [nc[0]].concat(circ, nc.slice(1));
+    } else if (pick < 0.85) {
+    // … or the lounge behind the porch so the entrance opens straight into it
+      const Mi = b[1].items, li = Mi.findIndex(it => it.t === 'lounge'); if (li >= 0) { const L = Mi.splice(li, 1)[0]; if (F.items[0] === porch) Mi.unshift(L); else Mi.push(L); } }
     if (b.length >= 4) {
-      S.spine = r() < 0.5 ? 'L' : 'R';
+      const Mi = b[1].items, li = Mi.findIndex(it => it.t === 'lounge');
+      S.spine = li === 0 ? 'L' : li === Mi.length - 1 && li > 0 ? 'R' : (r() < 0.5 ? 'L' : 'R');
       for (let i = 2; i < b.length; i++) { const p = room('passage', 50, { fixW: 4.5, lockedItem: true }); if (S.spine === 'L') b[i].items.unshift(p); else b[i].items.push(p); }
-    } else if (r() < (b.length === 3 ? 0.4 : 0.2)) {
+      // corridors: one right behind the middle row (serves it and the first rear row),
+      // then one between each later pair of rear rows — every room opens onto a corridor
+      const mkC = () => ({ id: 'C', items: [room('passage', 4 * S.E.W, { minW: 3, lockedItem: true })], minD: 4, fixedD: 4 });
+      const rear = b.splice(2); const minSum0 = b.reduce((s, x) => s + (x.fixedD || x.minD), 0) + rear.reduce((s, x) => s + x.minD, 0);
+      const plan1 = [mkC(), rear[0]];
+      for (let i = 1; i < rear.length; i += 2) { if (i + 1 < rear.length) plan1.push(rear[i], mkC(), rear[i + 1]); else plan1.push(mkC(), rear[i]); }
+      const plan2 = []; rear.forEach((rw, i) => { plan2.push(rw); if (i % 2 === 0 && i < rear.length - 1) plan2.push(mkC()); });
+      const cost = pl => pl.filter(x => x.id === 'C').length * 4;
+      const pl = S.Dmax >= minSum0 + cost(plan1) ? plan1 : S.Dmax >= minSum0 + cost(plan2) ? plan2 : rear;
+      b.push(...pl);
+      const lb = b[b.length - 1]; if (b[b.length - 2].id === 'C') lb.items = lb.items.filter(it => !(it.t === 'passage' && it.lockedItem));
+    } else if (r() < (b.length === 3 ? (b[2].items.length >= 3 ? 0.6 : 0.4) : 0.2)) {
       b.splice(b.length - 1, 0, { id: 'C', items: [room('passage', 4 * S.E.W, { minW: 3, lockedItem: true })], minD: 4, fixedD: 4 });
     }
     // depths
@@ -407,9 +447,10 @@
     }));
     const porch = rooms.find(r => r.t === 'porch');
     if (porch) {
-      const pref = ['foyer', 'lounge', 'dining', 'passage'];
-      const c = nb(porch, o => pref.includes(o.t), 3.5).sort((p, q) => pref.indexOf(p.o.t) - pref.indexOf(q.o.t));
-      if (c.length) placeDoor(porch, c[0].o, c[0].s, 4, 'entry', c[0].o.id);
+      // main entrance; fall back to the drawing room, then a kitchen door (common on small plots)
+      const pref = ['foyer', 'lounge', 'dining', 'passage', 'drawing', 'kitchen'];
+      const c = nb(porch, o => pref.includes(o.t), 3).sort((p, q) => pref.indexOf(p.o.t) - pref.indexOf(q.o.t));
+      for (const e of c) if (placeDoor(porch, e.o, e.s, e.s.len >= 4.6 ? 4 : 3, 'entry', e.o.id)) { if (e.o.t === 'kitchen') porch.kitchenEntry = true; break; }
     }
     const circPref = ['passage', 'flounge', 'lounge', 'foyer', 'dining', 'stair'];
     for (const rm of rooms) {
@@ -434,19 +475,21 @@
       } else if (rm.t === 'kitchen') {
         const pref = ['dining', 'lounge', 'passage', 'foyer', 'flounge'];
         const c = nb(rm, o => pref.includes(o.t), 3).sort((p, q) => pref.indexOf(p.o.t) - pref.indexOf(q.o.t));
-        if (c.length) ok = placeDoor(c[0].o, rm, c[0].s, 3, 'door', rm.id);
+        for (const e of c) { ok = placeDoor(e.o, rm, e.s, 3, 'door', rm.id); if (ok) break; }
+        if (!ok) { const pe = nb(rm, o => o.t === 'porch', 3); if (pe.length) ok = placeDoor(pe[0].o, rm, pe[0].s, 3, 'door', rm.id); }
       } else if (rm.t === 'terrace') {
         const c = nb(rm, o => isCirc(o) || o.t === 'bed' || o.t === 'study', 3).sort((p, q) => isCirc(q.o) - isCirc(p.o));
         if (c.length) ok = placeDoor(c[0].o, rm, c[0].s, 3, 'door', rm.id);
       } else if (rm.t === 'stair' && fi === 0) {
-        const c = nb(rm, o => ['lounge', 'passage', 'foyer', 'dining'].includes(o.t), 3.5);
-        if (c.length) ok = placeDoor(c[0].o, rm, c[0].s, Math.min(rm.w - 0.75, 4), 'open', rm.id);
+        const sp = ['lounge', 'passage', 'foyer', 'dining', 'porch'];
+        const c = nb(rm, o => sp.includes(o.t), 3.5).sort((p, q) => sp.indexOf(p.o.t) - sp.indexOf(q.o.t));
+        for (const e of c) { ok = placeDoor(e.o, rm, e.s, Math.min(rm.w - 0.75, 4), 'open', rm.id); if (ok) break; }
       } else if (rm.t === 'shaft' || rm.t === 'proof') ok = true;
       else if (rm.t === 'court') { const c = nb(rm, isCirc, 3); if (c.length) placeDoor(c[0].o, rm, c[0].s, 3, 'door', rm.id); ok = true; rm.extDoor = true; }
       else {
         const c = nb(rm, isCirc, 3).sort((p, q) => circPref.indexOf(p.o.t) - circPref.indexOf(q.o.t));
         if (rm.stairFiller) { const kk = nb(rm, o => o.t === 'kitchen', 3); if (kk.length) c.unshift(kk[0]); }
-        if (c.length) ok = placeDoor(c[0].o, rm, c[0].s, rm.t === 'bed' || rm.t === 'study' ? 3 : 2.5, 'door', rm.id);
+        for (const e of c) { ok = placeDoor(e.o, rm, e.s, rm.t === 'bed' || rm.t === 'study' ? 3 : 2.5, 'door', rm.id); if (ok) break; }
       }
     }
     const start = fi === 0 ? porch : rooms.find(r => r.t === 'stair');
@@ -509,6 +552,7 @@
       if (rooms.some(r => r.t === 'dining') && !has('kitchen', 'dining')) s += 14;
       if (rooms.some(r => r.t === 'dining') && !has('dining', 'lounge')) s += 8;
       if (!conn.links.some(l => l.kind === 'entry')) s += 60;
+      if (rooms.some(r => r.kitchenEntry)) s += 40;
     }
     s += rooms.filter(r => r.t === 'passage').reduce((a, r) => a + r.w * r.h, 0) / 12;
     return { s, issues };
@@ -753,18 +797,19 @@
   }
 
   // ---------- Search (proposes schemes; not used for edits) ----------
-  function generate(plot, opts, rules, seed, tries) {
+  function generate(plot, opts, rules, seed, tries, diag) {
     const R0 = rngFrom(seed); tries = tries || 160;
+    const why = (k) => { if (diag) diag[k] = (diag[k] || 0) + 1; };
     let o = clone(opts); if (o.storeys === 1) o.gfBeds = o.beds; o.gfBeds = Math.min(o.gfBeds, o.beds);
-    const notesBase = []; let best = null;
-    for (let attempt = 0; attempt < 5; attempt++) {
-      const res = [];
-      for (let t = 0; t < tries; t++) {
+    const notesBase = []; let best = null; const moved = { up: 0, down: 0 };
+    for (let attempt = 0; attempt < 16; attempt++) {
+      const res = []; const nt = attempt < 2 ? tries : Math.ceil(tries / (attempt < 5 ? 2 : 3));
+      for (let t = 0; t < nt; t++) {
         const r = rngFrom(Math.floor(R0() * 1e9));
-        let S = initialScheme(plot, o, rules, r); if (!S) break;
+        let S = initialScheme(plot, o, rules, r); if (!S) { why('scheme'); break; }
         S.corner = opts.corner; S.cornerSide = opts.cornerSide;
-        S = vary(S, r); if (!S) continue;
-        let P = realise(S); if (P.error) continue;
+        S = vary(S, r); if (!S) { why('depth'); continue; }
+        let P = realise(S); if (P.error) { why('row:' + P.error.replace(/\d[\d'"-]*/g, '#')); continue; }
         // pull depth back if ground coverage is exceeded
         for (let fix = 0; fix < 4 && P.stats.gfCounted > P.stats.covMax + 0.5; fix++) {
           const over = (P.stats.gfCounted - P.stats.covMax) / S.E.W + 0.25;
@@ -782,24 +827,41 @@
             const P2 = realise(S2); if (P2.error) continue;
             if (!bestF || P2.score < bestF.score) bestF = P2;
           }
-          if (!bestF) continue; P = bestF;
+          if (!bestF || bestF.floors.length < 2) { why('ff'); continue; } P = bestF;
         }
-        if (P.floors.some(f => f.unreachable.length)) continue;
+        if (P.floors.some(f => f.unreachable.length)) { why('unreach:' + P.floors.map(f => f.unreachable.map(u => (f.rooms.find(r => r.id === u) || {}).t || u).join(',')).join('/')); continue; }
         P.sig = P.floors[0].rooms.map(x => x.t[0] + Math.round(x.x) + ',' + Math.round(x.y)).join('');
         res.push(P);
       }
-      res.sort((a, b) => a.score - b.score);
+      // a plan that fails a bylaw only wins when nothing compliant was found
+      res.forEach(p => { p.badN = p.checks.filter(c => c.s === 'bad').length; p.rank = p.score + p.badN * 1000; });
+      res.sort((a, b) => a.rank - b.rank);
+      const okFound = res.some(p => !p.badN);
       if (res.length) {
-        const val = res[0].score + notesBase.length * 30;
+        // rank attempts against the ORIGINAL brief: every bedroom short costs 140, every relaxation 30
+        const val = res[0].rank + Math.max(0, opts.beds - o.beds) * 140 + notesBase.length * 30;
         if (!best || val < best.val) best = { val, res, notes: notesBase.slice() };
-        if (res[0].score < 90) break;
+        if (res[0].rank < 90) break;
       }
-      if (o.gfBeds > 0 && o.storeys >= 2) { o.gfBeds--; notesBase.push('One ground-floor bedroom moved upstairs for a workable plan.'); }
-      else if (o.drawing) { o.drawing = false; notesBase.push('Drawing room dropped — it did not fit.'); }
-      else if (o.beds > 2) { o.beds--; notesBase.push('One bedroom fewer, to fit the plot.'); }
-      else break;
+      if (best && best.res[0].stats.beds >= opts.beds && best.res[0].rank < 150) break;
+      if (!relax(okFound, okFound && res[0].stats.beds < o.beds)) break;
     }
-    if (!best) return [];
+    function relax(found, short) {
+      // gentlest change first; each step is explained to the user
+      if (found && short && o.storeys >= 2 && !moved.down && o.gfBeds < Math.min(4, o.beds)) { o.gfBeds++; moved.up++; notesBase.push('One bedroom moved downstairs — the first floor could not hold them all.'); return true; }
+      if (o.gfBeds > 0 && o.storeys >= 2 && !moved.up) { o.gfBeds--; moved.down++; notesBase.push('One ground-floor bedroom moved upstairs for a workable plan.'); return true; }
+      if (o.dress) { o.dress = false; notesBase.push('Dressing rooms reduced to wardrobes — they did not fit.'); return true; }
+      if (o.dining) { o.dining = false; notesBase.push('Separate dining merged into the lounge — it did not fit.'); return true; }
+      if (o.drawing) { o.drawing = false; notesBase.push('Drawing room dropped — it did not fit.'); return true; }
+      if (o.cars >= 2) { o.cars = 1; notesBase.push('Car porch reduced to one car — two did not fit.'); return true; }
+      if (o.servant && !rules.servantRequired) { o.servant = false; notesBase.push('Servant room dropped — it did not fit.'); return true; }
+      if (found) return false; // only give up bedrooms when nothing fits at all
+      if (o.storeys === 1 && o.beds > 1) { o.beds--; o.gfBeds = o.beds; notesBase.push('One bedroom fewer — a single storey on this plot cannot hold more.'); return true; }
+      if (o.storeys >= 2 && o.beds > 1) { o.beds--; notesBase.push('One bedroom fewer, to fit the plot.'); return true; }
+      return false;
+    }
+    if (diag) { diag.tried = notesBase.slice(); diag.opts = o; }
+    if (!best) { const none = []; none.diag = diag || null; return none; }
     const uniq = []; const seen = new Set();
     for (const p of best.res) { if (seen.has(p.sig)) continue; seen.add(p.sig); p.notes = best.notes.concat(p.notes.filter(n => !best.notes.includes(n))); p.scheme.notes = p.notes.slice(); uniq.push(p); if (uniq.length >= 6) break; }
     return uniq;
@@ -877,7 +939,7 @@
     add(S, type, floor, lane) {
       const S2 = clone(S); const T = S2.T; let it;
       if (type === 'bed') it = suite('bed', T.bed, { sideLeft: false, bathTop: false, dress: S2.opts.dress && S2.k >= 2 });
-      else if (type === 'servant') it = stack([room('servant', T.servant, { minW: 9.5 }), room('sbath', 28, { minW: 3.75 })]);
+      else if (type === 'servant') it = suite('servant', T.servant, { minW: 10, sideW: 5, bathD: 6.75, bathType: 'sbath' });
       else if (type === 'drawing') it = room('drawing', T.drawing);
       else if (type === 'dining') it = room('dining', T.dining);
       else if (type === 'study') it = room('study', T.study);
@@ -912,6 +974,6 @@
     },
   };
 
-  const api = { PLOTS, SCHED_A, RT, cdaRules, porchRules, defaultOpts, generate, realise, edit, locate, fmt, WALL, annex1 };
+  const api = { PLOTS, SCHED_A, RT, cdaRules, porchRules, defaultOpts, generate, realise, edit, locate, fmt, WALL, annex1, _dbg: { initialScheme: (...a) => initialScheme(...a), vary: (...a) => vary(...a), rngFrom: (...a) => rngFrom(...a) } };
   if (typeof module !== 'undefined') module.exports = api; else root.BuildMe = api;
 })(this);

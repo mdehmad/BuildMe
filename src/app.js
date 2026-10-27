@@ -1,7 +1,7 @@
 /* BuildMe — application shell: dashboard, design assistant, guided questions, workspace, projects, tools */
 (function () {
   'use strict';
-  const P = window.BuildMe, V = window.BuildMeRender, M3 = window.BuildMe3D, X = window.BuildMeExport;
+  const P = window.BuildMe, V = window.BuildMeRender, M3 = window.BuildMe3D, X = window.BuildMeExport, H = window.BuildMeHelp;
   const $ = s => document.querySelector(s);
   const $$ = s => Array.from(document.querySelectorAll(s));
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -26,7 +26,7 @@
   };
 
   // ======================= ROUTING =======================
-  const TITLES = { dashboard: 'Dashboard', new: 'New design', design: 'Design workspace', projects: 'My projects', plots: 'Plot sizes', cost: 'Cost estimator', bylaws: 'CDA bylaws' };
+  const TITLES = { dashboard: 'Dashboard', new: 'New design', design: 'Design workspace', projects: 'My projects', plots: 'Plot sizes', cost: 'Cost estimator', bylaws: 'CDA bylaws', help: 'Help & FAQ' };
   function go(route, opt) {
     if (route === 'design' && !st.cur) route = 'new';
     st.route = route;
@@ -42,8 +42,16 @@
     if (route === 'plots' && !catDone) buildCatalogue();
     if (route === 'cost') renderEstimator();
     if (route === 'design') { renderResults(); }
+    if (H) {
+      if (route === 'help') H.mountHelpPage($('#help-page'));
+      const qa = { dashboard: ['#quick-dash', 'Questions people ask', 'Tap a question for Mimar\u2019s answer'], new: ['#quick-new', 'Quick answers', 'About plots, bylaws and what fits'], design: ['#quick-design', 'Quick answers', 'About this layout and downloads'],
+        projects: ['#quick-projects', 'Quick answers', 'About saving and files'], plots: ['#quick-plots', 'Quick answers', 'About plot sizes'], cost: ['#quick-cost', 'Quick answers', 'About the estimate'], bylaws: ['#quick-bylaws', 'Quick answers', 'About CDA rules'] }[route];
+      if (qa) H.mountQuick($(qa[0]), route, { title: qa[1], sub: qa[2], n: route === 'dashboard' ? 6 : 4 });
+      H.setScreen(route);
+    }
     window.scrollTo({ top: 0 });
   }
+  window.addEventListener('hashchange', () => { const h = (location.hash || '').replace('#', ''); if (TITLES[h] && h !== st.route) go(h); });
   document.addEventListener('click', e => { const b = e.target.closest('[data-route]'); if (b && !b.closest('[data-view="bylaws"] a')) { e.preventDefault(); go(b.dataset.route); } });
   const side = $('#side'), scrim = $('#scrim');
   function closeMenu() { side.classList.remove('open'); scrim.hidden = true; }
@@ -189,8 +197,9 @@
   }
   $('#custom-go').addEventListener('click', () => {
     const w = Math.round(+$('#cw').value), d = Math.round(+$('#cd').value); const m = $('#plot-msg');
-    if (!(w >= 20 && w <= 120)) { m.textContent = 'Enter a width between 20 and 120 ft.'; m.className = 'msg err'; $('#cw').focus(); return; }
-    if (!(d >= 30 && d <= 200)) { m.textContent = 'Enter a depth between 30 and 200 ft.'; m.className = 'msg err'; $('#cd').focus(); return; }
+    if (!(w >= 20 && w <= 120)) { m.textContent = 'Enter a width between 20 and 120 ft.'; m.className = 'msg err'; $('#cw').focus(); if (H) H.toast({ kind: 'bad', title: 'That width won\u2019t work', text: 'BuildMe designs plots 20\u2013120 ft wide (the side facing the road).' }); return; }
+    if (!(d >= 30 && d <= 200)) { m.textContent = 'Enter a depth between 30 and 200 ft.'; m.className = 'msg err'; $('#cd').focus(); if (H) H.toast({ kind: 'bad', title: 'That depth won\u2019t work', text: 'BuildMe designs plots 30\u2013200 ft deep.' }); return; }
+    if (w < 25 && H) H.toast({ title: 'Narrow plot', text: 'Under 25 ft wide, BuildMe puts the bedrooms upstairs \u2014 choose double storey on the next step.', mood: 'think' });
     choosePlot({ id: w + 'x' + d, w, d, sqft: w * d, sqyd: Math.round(w * d / 9), common: (w * d / 225).toFixed(1) + ' Marla', custom: true });
     m.textContent = `Using ${w} × ${d} ft.`; m.className = 'msg ok';
   });
@@ -281,11 +290,59 @@
     if (newSeed) st.seed = (st.seed * 1103515245 + 12345) >>> 0;
     if (st.route !== 'new') go('new', { step: st.step });
     $$('[data-step]').forEach(c => c.hidden = true); $('#working').hidden = false;
+    if (H) { const f = H.FAQ[Math.floor(Math.random() * H.FAQ.length)]; $('#working').innerHTML = `<span class="w-mm">${H.mimarSVG('mood-think')}</span><div><b>Mimar is drawing layouts that fit your plot\u2026</b><span class="hint">Did you know? ${esc(f.tip || f.q)}</span></div>`; }
     setTimeout(() => {
-      st.options = P.generate(st.plot, Object.assign({}, st.opts, { corner: st.corner }), st.rules, st.seed, 100);
-      $('#working').hidden = true; $('#nav-design').hidden = false;
+      const diag = {}; let err = null;
+      try { st.options = P.generate(st.plot, Object.assign({}, st.opts, { corner: st.corner }), st.rules, st.seed, 100, diag); }
+      catch (e) { st.options = []; err = e; if (window.console) console.error(e); }
+      $('#working').hidden = true;
+      if (!st.options.length) { goStep(3, true); explainNoFit(diag, err); return; }
+      $('#nav-design').hidden = false;
       loadOption(0); go('design');
+      const notes = (st.options[0].notes || []).filter((v, i, a) => a.indexOf(v) === i && !/^First floor:/.test(v));
+      if (H && notes.length) H.toast({ title: `Mimar adjusted ${notes.length} thing${notes.length > 1 ? 's' : ''} to make it fit`, text: notes[0], action: { label: 'Why?', run: () => explainAdjust(notes) }, ms: 9000 });
+      else if (H) H.say(`${st.options.length} layout${st.options.length > 1 ? 's' : ''} fit your plot. Click one to compare, then try the 3D tab.`, 'happy');
     }, 30);
+  }
+
+  // ---------- explaining failures and adjustments (Mimar pop-ups) ----------
+  function fitFacts() {
+    const R = st.rules, p = st.plot; const W = p.w - R.sideL - R.sideR, D = p.d - R.front - R.rear;
+    return { W, D, cov: Math.round(R.cov * p.sqft), far: Math.round(R.far * p.sqft) };
+  }
+  function explainNoFit(diag, err) {
+    if (!H) { alert('No layout fits these answers. Try fewer rooms or double storey.'); return; }
+    const o = st.opts, p = st.plot, f = fitFacts(); const reasons = []; const fx = P.fmt;
+    const keys = Object.keys(diag || {}).filter(k => typeof diag[k] === 'number');
+    const has = re => keys.some(k => re.test(k));
+    if (err) reasons.push({ title: 'Something went wrong while designing', text: String(err.message || err).slice(0, 140) });
+    if (has(/^scheme$/) || f.W < 16) reasons.push({ title: `Only ${fx(Math.max(0, f.W))} of buildable width`, text: `After side setbacks the house can be at most ${fx(Math.max(0, f.W))} wide; BuildMe needs at least 16'-0" for a room beside the stairs.` });
+    if (has(/middle row/)) reasons.push({ title: 'Lounge, kitchen and stairs don\u2019t fit across', text: `With the bedrooms you asked for, the middle row needs more than the ${fx(f.W)} the house can be wide.` });
+    if (has(/front row/)) reasons.push({ title: 'The front row is too crowded', text: `The car porch (${o.cars >= 2 ? '18\'-6"' : '10\'-6"'} wide) plus the rooms beside it need more than ${fx(f.W)}.` });
+    if (has(/rear row/)) reasons.push({ title: 'The bedrooms don\u2019t fit across the back', text: `Each bedroom with its bath needs about 15 ft of width; ${fx(f.W)} isn\u2019t enough for that many in one row.` });
+    if (has(/^depth$/)) reasons.push({ title: 'Not enough depth within the coverage limit', text: `The ground floor may cover ${f.cov.toLocaleString('en-PK')} ft\u00b2 (${Math.round(st.rules.cov * 100)}%), which leaves too little depth for every row.` });
+    if (has(/^unreach/)) reasons.push({ title: 'Some rooms ended up without a door', text: 'Every arrangement tried left a room reachable only through another room.' });
+    if (!reasons.length) reasons.push({ title: 'The brief needs more space than CDA allows here', text: `Ground floor max ${f.cov.toLocaleString('en-PK')} ft\u00b2, total max ${f.far.toLocaleString('en-PK')} ft\u00b2.` });
+    const fixes = []; const redo = ch => () => { Object.assign(st.opts, ch); if (st.opts.gfBeds > st.opts.beds) st.opts.gfBeds = st.opts.beds; saveAnswers(); design(); };
+    if (o.storeys === 1) fixes.push({ label: 'Make it double storey', run: redo({ storeys: 2, gfBeds: Math.min(1, o.beds) }) });
+    if (o.beds > 1) fixes.push({ label: `Try ${o.beds - 1} bedroom${o.beds - 1 > 1 ? 's' : ''}`, run: redo({ beds: o.beds - 1 }) });
+    if (o.drawing) fixes.push({ label: 'Without the drawing room', run: redo({ drawing: false }) });
+    if (o.cars >= 2) fixes.push({ label: 'One-car porch', run: redo({ cars: 1 }) });
+    if (o.dining) fixes.push({ label: 'Dining in the lounge', run: redo({ dining: false }) });
+    if (p.w < 25) fixes.push({ label: 'Use a 25 \u00d7 50 plot instead', run: () => { const q = P.PLOTS.find(x => x.id === '25x50'); st.plot = q; st.rules = P.cdaRules(q); st.opts.storeys = 2; renderPlotChoices(); renderAllow(); saveAnswers(); design(); } });
+    H.oops({
+      title: `No layout fits ${p.w} \u00d7 ${p.d} with this brief`,
+      lead: `I tried hundreds of arrangements for ${o.storeys === 2 ? 'a double' : 'a single'} storey with ${o.beds} bedroom${o.beds > 1 ? 's' : ''}${o.drawing ? ', a drawing room' : ''}${o.dining ? ', separate dining' : ''}. Here\u2019s what got in the way:`,
+      reasons: reasons.slice(0, 4), fixes: fixes.slice(0, 4), faqs: p.w < 25 ? ['narrow', 'howmany', 'nofit'] : ['nofit', 'howmany', 'order'],
+      closeLabel: 'Change my answers',
+    });
+  }
+  function explainAdjust(notes) {
+    if (!H) return;
+    H.oops({ kind: 'info', title: 'Here\u2019s what I changed, and why', lead: `Your full brief didn\u2019t fit ${st.plot.w} \u00d7 ${st.plot.d} under CDA rules, so I made the gentlest changes that work:`,
+      reasons: notes.map(n => ({ title: n })), fixLabel: 'Prefer something else?',
+      fixes: [{ label: 'Change my answers', run: () => go('new', { step: 1 }) }].concat(st.opts.storeys === 1 ? [{ label: 'Try double storey', run: () => { st.opts.storeys = 2; st.opts.gfBeds = Math.min(1, st.opts.beds); saveAnswers(); design(); } }] : []),
+      faqs: ['order', 'fewer', 'howmany'], closeLabel: 'Keep these layouts' });
   }
   $('#change').addEventListener('click', () => go('new', { step: 3 }));
   $('#more-opts').addEventListener('click', () => design(true));
@@ -376,7 +433,8 @@
     $('#proj-name').value = st.projectName;
     $('#res-sub').textContent = `${st.plot.w} × ${st.plot.d} · ${st.plot.common} · ${p.floors.length > 1 ? 'double' : 'single'} storey · ${p.stats.beds} bedrooms · road on the ${FACING[st.facing]}${st.projectId ? ' · saved project' : ''}`;
     const nts = (p.notes || []).filter((v, i, a) => a.indexOf(v) === i);
-    $('#notes').hidden = !nts.length; $('#notes').textContent = nts.length ? 'Adjusted to fit: ' + nts.join(' ') : '';
+    $('#notes').hidden = !nts.length; $('#notes').innerHTML = nts.length ? 'Adjusted to fit: ' + esc(nts.join(' ')) + ' <button class="btn link" type="button" id="notes-why">Why?</button>' : '';
+    if (nts.length) $('#notes-why').addEventListener('click', () => explainAdjust(nts));
     if (st.floor >= p.floors.length + (p.floors.length > 1 ? 1 : 0)) st.floor = 0;
     const tabs = p.floors.map((f, i) => i ? 'First floor' : 'Ground floor'); if (p.floors.length > 1) tabs.push('Roof');
     $('#floor-tabs').innerHTML = tabs.map((t, i) => `<button role="tab" aria-selected="${i === st.floor}" data-f="${i}">${t}</button>`).join('');
@@ -426,12 +484,14 @@
     if (p.floors[0].rooms.some(r => r.skylight)) tips.push({ t: 'Lounge needs a skylight', d: 'The TV lounge has no outside wall, so it relies on a skylight. Swap it with a room on the front or rear row for a window.', a: ['edit', 'Customise'] });
     warns.forEach(w => tips.push({ k: 'warn', t: w.label, d: w.detail }));
     p.floors.forEach((f, fi) => f.issues.forEach(i => tips.push({ t: (fi ? 'First floor: ' : 'Ground floor: ') + i, d: 'Try mirroring the layout or swapping it with a room on an outside wall.', a: ['edit', 'Customise'] })));
+    if (p.floors[0].rooms.some(r => r.kitchenEntry)) tips.push({ k: 'warn', t: 'Kitchen door from the porch', d: 'On this tight plot the kitchen opens from the porch. Pick another layout or drop a room for a separate entrance.', a: ['faq:kitchenentry', 'Why?'] });
+    if (p.notes && p.notes.length) tips.push({ t: 'Brief adjusted to fit', d: p.notes.slice(0, 2).join(' '), a: ['why', 'See what changed'] });
     const sun = { N: 'Road on the north: front rooms stay cool and evenly lit — large front windows work well.', S: 'Road on the south: the front gets strong sun. Deep sunshades (Contemporary style) keep front rooms cooler.', E: 'Road on the east: morning sun on the front. Bedrooms at the back stay cooler in the evening.', W: 'Road on the west: harsh afternoon sun on the front. Use sunshades or louvers (Modern style) on front windows.' };
     tips.push({ t: 'Orientation', d: sun[st.facing] });
     if (v3style === 'massing') tips.push({ t: 'Pick an elevation style', d: 'See the house in Modern, Spanish, French and other Pakistani styles, and include its finish in the cost.', a: ['3d', 'Open 3D & styles'] });
     if (!st.projectId || st.dirty) tips.push({ t: st.projectId ? 'Unsaved changes' : 'Save this design', d: 'Save it to your projects to compare designs from the dashboard later.', a: ['save', 'Save project'] });
     $('#tips').innerHTML = tips.slice(0, 7).map(x => `<li class="${x.k || ''}"><b>${esc(x.t)}</b><span>${esc(x.d)}</span>${x.a ? `<button class="btn sm soft act" data-tip="${x.a[0]}">${esc(x.a[1])}</button>` : ''}</li>`).join('');
-    $$('#tips [data-tip]').forEach(b => b.addEventListener('click', () => { const a = b.dataset.tip; if (a === 'save') saveProject(); else selectTab(a); }));
+    $$('#tips [data-tip]').forEach(b => b.addEventListener('click', () => { const a = b.dataset.tip; if (a === 'save') saveProject(); else if (a === 'why') explainAdjust((p.notes || []).filter((v, i, x) => x.indexOf(v) === i)); else if (a.startsWith('faq:') && H) H.openFaq(a.slice(4)); else selectTab(a); }));
   }
   function renderChecks(p) {
     const bad = p.checks.filter(c => c.s === 'bad').length, warn = p.checks.filter(c => c.s === 'warn').length;
@@ -717,5 +777,5 @@
   } catch (e) { }
   renderPlotChoices(); renderFacing(); renderAllow(); updateCount(); estInit();
   const h = (location.hash || '').replace('#', '');
-  go(['new', 'projects', 'plots', 'cost', 'bylaws'].includes(h) ? h : 'dashboard');
+  go(['new', 'projects', 'plots', 'cost', 'bylaws', 'help'].includes(h) ? h : 'dashboard');
 })();
