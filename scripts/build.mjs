@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = f => readFileSync(join(root, f), 'utf8');
-const parts = { ENGINE: 'src/engine.js', RENDER: 'src/render.js', M3D: 'src/model3d.js', EXPORT: 'src/export.js', HELP: 'src/help.js', APP: 'src/app.js' };
+const parts = { AUTH: 'src/authorities.js', ENGINE: 'src/engine.js', RENDER: 'src/render.js', M3D: 'src/model3d.js', EXPORT: 'src/export.js', INTERIOR: 'src/interior.js', DETAIL: 'src/interior-detail.js', INTERIOR3D: 'src/interior3d.js', HELP: 'src/help.js', APP: 'src/app.js' };
 
 let body = read('src/template.html');
 for (const [key, file] of Object.entries(parts)) {
