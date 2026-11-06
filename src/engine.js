@@ -48,8 +48,12 @@
       storeys: 2, height: 30, units: yd >= 488 ? 2 : 1, servantRequired: yd >= 501,
     };
   }
-  // cl. 12.06 porch allowance
+  // ---------- other authorities (see authorities.js) ----------
+  const AUTH = (typeof module !== 'undefined' && module.exports && typeof require === 'function') ? require('./authorities.js') : root.BuildMeAuth;
+  function rulesFor(plot, id) { return AUTH ? AUTH.rulesFor(plot, id || 'cda', cdaRules) : Object.assign(cdaRules(plot), { authority: 'cda', auth: 'CDA' }); }
+  // cl. 12.06 porch allowance (CDA); other authorities carry their own porch rule
   function porchRules(rules, cars) {
+    if (rules.porch) { const p = rules.porch, k = cars >= 2 ? 1.8 : 1; return { total: Math.round(p.total * k), inSetback: Math.round(p.inSetback * k), maxLen: cars >= 2 ? Math.max(p.maxLen, 30) : p.maxLen, openSides: 1, kind: (cars >= 2 ? 'double, ' : '') + p.kind }; }
     if (rules.type === 'terraced') return { total: 180, inSetback: 80, maxLen: 99, openSides: 1, kind: 'single (terraced)' };
     const big = rules.front > 10;
     if (cars >= 2) return { total: big ? 400 : 300, inSetback: big ? 400 : 300, maxLen: 30, openSides: 2, kind: 'combined double' };
@@ -679,7 +683,8 @@
       if (rr.i === sb || rr.id === 'C') return;
       const its = ff.rows[rr.i] || []; if (!its.length) return;
       const want = its.reduce((s, it) => s + itemWant(it, rr.h, S), 0);
-      const spare = E.W - want * 1.3; if (spare >= 5) cut[rr.i] = snapH(spare);
+      const room_ = E.W - its.reduce((s, it) => s + itemMinW(it, S), 0);
+      const spare = Math.min(E.W - want * 1.3, room_); if (spare >= 5) cut[rr.i] = Math.floor(spare * 2) / 2;
     });
     let last = null;
     for (let iter = 0; iter < 10; iter++) {
@@ -766,7 +771,7 @@
     const plot = S.plot, R = S.rules, E = S.E, A = plot.sqft; const out = [];
     const add = (s, label, detail, w) => out.push({ s, label, detail, w });
     const rear = plot.d - E.y0 - D, sideR = plot.w - E.x0 - E.W;
-    const def = cdaRules(plot);
+    const def = rulesFor(plot, R.authority || 'cda'); const isCDA = !R.authority || R.authority === 'cda'; const AU = def.auth || 'CDA';
     add(E.y0 >= def.front - 0.01 && rear >= def.rear - 0.01 ? 'ok' : 'bad', 'Front & rear setbacks', `Front ${fmt(E.y0)} (min ${def.front}'), rear ${fmt(rear)} (min ${def.rear}')`);
     if (R.type === 'detached' || def.sideL + def.sideR > 0) add(E.x0 >= def.sideL && sideR >= def.sideR ? 'ok' : 'bad', 'Side setbacks', `${fmt(E.x0)} and ${fmt(sideR)} (min ${def.sideL}' / ${def.sideR}')`);
     else add('ok', 'Side setbacks', 'None required for terraced houses — party walls both sides');
@@ -775,16 +780,19 @@
     if (porch) {
       const pw = porch.w - WALL;
       const okA = st.porchExcess <= 0.5 && st.porchSet <= pr.inSetback + 0.5;
-      add(okA ? 'ok' : 'warn', 'Car porch area', `${Math.round(st.porch)} ft² (${Math.round(st.porchSet)} in setback) — ${pr.kind} limit ${pr.total} ft²${R.type === 'terraced' ? ', 80 ft² in setback' : ''}${st.porchExcess > 0.5 ? `; ${Math.round(st.porchExcess)} ft² counted into coverage/FAR` : ''}`, 0);
+      add(okA ? 'ok' : 'warn', 'Car porch area', `${Math.round(st.porch)} ft² (${Math.round(st.porchSet)} in setback) — ${pr.kind}, limit ${pr.total} ft²${isCDA && R.type === 'terraced' ? ', 80 ft² in setback' : ''}${st.porchExcess > 0.5 ? `; ${Math.round(st.porchExcess)} ft² counted into coverage/FAR` : ''}`, 0);
       add(pw >= 9 ? 'ok' : 'bad', 'Porch width', `${fmt(pw)} clear (min 9'-0")`);
-      if (R.type === 'detached') add(Math.max(porch.w, porch.h) <= pr.maxLen + 0.01 ? 'ok' : 'bad', 'Porch length', `${fmt(Math.max(porch.w, porch.h))} (max ${pr.maxLen}')`);
+      if (R.type === 'detached' || !isCDA) add(Math.max(porch.w, porch.h) <= pr.maxLen + 0.01 ? 'ok' : isCDA ? 'bad' : 'warn', 'Porch length', `${fmt(Math.max(porch.w, porch.h))} (max ${pr.maxLen}')`, 0);
       const ffr = floors[1] ? floors[1].rooms.filter(r => r.t === 'proof').length : 0;
       add('ok', 'Porch roof', ffr ? 'Roof over porch kept inaccessible — no terrace (cl. 12.06 vi)' : 'Porch roof not used as terrace (cl. 12.06 vi)');
     }
-    add(st.tower <= R.tower + 0.5 ? 'ok' : st.tower <= R.tower + 50 ? 'warn' : 'bad', 'Stair tower (mumty)', `${Math.round(st.tower)} ft² (max ${R.tower} ft², Schedule B; 7'-6" internal height)`);
-    add(S.opts.storeys <= 2 ? 'ok' : 'bad', 'Storeys & height', `${S.opts.storeys} storey${S.opts.storeys > 1 ? 's' : ''}, max 2 and 30'-0" from road; parapet 3'-0"`);
+    if (R.noMumty) add('warn', 'Stair tower (mumty)', `${AU} does not permit a mumty — use a roof hatch or confirm with the society (stair ${Math.round(st.tower)} ft²)`, 0);
+    else if (R.tower == null) add('ok', 'Stair tower (mumty)', `${Math.round(st.tower)} ft² — ${AU} sets no area limit; it must stay within the height limit`);
+    else add(st.tower <= R.tower + 0.5 ? 'ok' : st.tower <= R.tower + 50 ? 'warn' : 'bad', 'Stair tower (mumty)', `${Math.round(st.tower)} ft² (max ${R.tower} ft²${isCDA ? ', Schedule B; 7\'-6" internal height' : ''})`);
+    const maxSt = isCDA ? 2 : (def.storeys || 2);
+    add(S.opts.storeys <= maxSt ? 'ok' : 'bad', 'Storeys & height', isCDA ? `${S.opts.storeys} storey${S.opts.storeys > 1 ? 's' : ''}, max 2 and 30'-0" from road; parapet 3'-0"` : `${S.opts.storeys} storey${S.opts.storeys > 1 ? 's' : ''}; ${AU} allows up to ${maxSt} storeys and ${def.height}'-0"`);
     const srv = floors[0].rooms.some(r => r.t === 'servant') && floors[0].rooms.some(r => r.t === 'sbath');
-    if (R.servantRequired) add(srv ? 'ok' : 'bad', 'Servant room', srv ? 'Servant room with bath provided (required from 501 yd², cl. 10)' : 'Required from 501 yd² (cl. 10) — add a servant room with bath');
+    if (R.servantRequired && isCDA) add(srv ? 'ok' : 'bad', 'Servant room', srv ? 'Servant room with bath provided (required from 501 yd², cl. 10)' : 'Required from 501 yd² (cl. 10) — add a servant room with bath');
     const bad = [], relax = [];
     floors.forEach((f, fi) => f.rooms.forEach(r => { const a = annex1(r); if (a && !a.ok) (a.relax ? relax : bad).push(`${fi ? 'FF' : 'GF'} ${r.name} (needs ${a.need})`); }));
     add(bad.length ? 'bad' : relax.length ? 'warn' : 'ok', 'Minimum room sizes', bad.length ? bad.join('; ') : relax.length ? 'Within 10% relaxation (with penalty): ' + relax.join('; ') : 'All rooms meet Annex 1 minimum areas and widths', 120);
@@ -792,7 +800,8 @@
     if (stair) add(stair.w / 2 - 0.4 >= 3.25 ? 'ok' : 'warn', 'Stair flight width', `${fmt(stair.w / 2 - 0.4)} per flight (min 3'-3")`);
     const unreach = floors.reduce((s, f) => s + f.unreachable.length, 0);
     add(unreach ? 'bad' : 'ok', 'Circulation', unreach ? `${unreach} room(s) cannot be reached` : 'Every room reachable from the porch / stair landing', 400);
-    add('ok', 'Living units', `${R.units} unit${R.units > 1 ? 's' : ''} permitted on ${plot.sqyd} yd² (cl. 16)`);
+    if (isCDA) add('ok', 'Living units', `${R.units} unit${R.units > 1 ? 's' : ''} permitted on ${plot.sqyd} yd² (cl. 16)`);
+    else add('ok', 'Rules applied', `${def.authName}: ${def.band} — ${def.source ? def.source.name : ''}`);
     return out;
   }
 
@@ -974,6 +983,6 @@
     },
   };
 
-  const api = { PLOTS, SCHED_A, RT, cdaRules, porchRules, defaultOpts, generate, realise, edit, locate, fmt, WALL, annex1, _dbg: { initialScheme: (...a) => initialScheme(...a), vary: (...a) => vary(...a), rngFrom: (...a) => rngFrom(...a) } };
+  const api = { PLOTS, SCHED_A, RT, cdaRules, rulesFor, AUTH, porchRules, defaultOpts, generate, realise, edit, locate, fmt, WALL, annex1, _dbg: { initialScheme: (...a) => initialScheme(...a), vary: (...a) => vary(...a), rngFrom: (...a) => rngFrom(...a) } };
   if (typeof module !== 'undefined') module.exports = api; else root.BuildMe = api;
 })(this);

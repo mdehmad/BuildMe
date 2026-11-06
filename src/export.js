@@ -124,10 +124,10 @@
       if (sub) { doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.setTextColor(...muted); doc.text(sub, M, 21); }
       doc.setFontSize(8); doc.setTextColor(...muted); doc.text(`BuildMe · ${plot.w}' x ${plot.d}' · ${ctx.date}`, W - M, 15, { align: 'right' });
     };
-    const footer = n => { doc.setFontSize(7.5); doc.setTextColor(...muted); doc.text('Indicative concept under CDA Islamabad Residential Sectors Zoning (Building Control) Regulation 1993. Costs are estimates from 2026 Islamabad market rates. Have a licensed architect prepare approval drawings.', M, H - 7); doc.text(String(n), W - M, H - 7, { align: 'right' }); };
+    const footer = n => { doc.setFontSize(7.5); doc.setTextColor(...muted); doc.text(`Indicative concept under ${R.authority && R.authority !== 'cda' ? (R.authName + ' bylaws (' + (R.source ? R.source.name : '') + ')') : 'CDA Islamabad Residential Sectors Zoning (Building Control) Regulation 1993'}. Costs are 2026 market estimates. Have a licensed architect prepare approval drawings.`.slice(0, 230), M, H - 7); doc.text(String(n), W - M, H - 7, { align: 'right' }); };
     let page = 1;
     // --- page 1: summary
-    header(`House concept — ${plot.w}' x ${plot.d}' (${plot.common})`, `${plot.sqyd} sq yd · CDA category ${R.cat} (${R.row}) · ${p.floors.length > 1 ? 'double' : 'single'} storey · ${ctx.styleName} elevation · road on the ${ctx.road}`);
+    header(`House concept — ${plot.w}' x ${plot.d}' (${plot.common})`, `${plot.sqyd} sq yd · ${R.authority && R.authority !== 'cda' ? R.auth + ' · ' + R.band : 'CDA category ' + R.cat + ' (' + R.row + ')'} · ${p.floors.length > 1 ? 'double' : 'single'} storey · ${ctx.styleName} elevation · road on the ${ctx.road}`);
     if (ctx.front) { const iw = 168, ih = iw * 0.62; doc.addImage(ctx.front, 'JPEG', M, 27, iw, ih); doc.setFontSize(8); doc.setTextColor(...muted); doc.text(`Front view — ${ctx.styleName}`, M, 27 + ih + 5); }
     else { doc.setFontSize(10); doc.setTextColor(...muted); doc.text('3D render unavailable in this browser.', M, 40); }
     let y = 30; const x2 = M + 176;
@@ -138,7 +138,7 @@
     kv('Total built (FAR)', `${Math.round(st.far).toLocaleString()} of ${Math.round(st.farMax).toLocaleString()} ft² (${(st.far / plot.sqft).toFixed(2)} / ${R.far})`);
     kv('Setbacks', `Front ${P.fmt(p.E.y0)} · Rear ${P.fmt(plot.d - p.E.y0 - p.D)} · Sides ${P.fmt(p.E.x0)} / ${P.fmt(plot.w - p.E.x0 - p.E.W)}`);
     const fails = p.checks.filter(c => c.s === 'bad').length;
-    kv('CDA bylaw check', fails ? `${fails} issue(s) — see page ${p.floors.length + 4}` : `All ${p.checks.length} checks pass`);
+    kv(`${R.auth || 'CDA'} bylaw check`, fails ? `${fails} issue(s) — see page ${p.floors.length + 4}` : `All ${p.checks.length} checks pass`);
     // cost box
     const c = ctx.cost; y += 1;
     doc.setFillColor(234, 242, 252); doc.roundedRect(x2 - 4, y - 4, W - M - x2 + 4, 52, 2, 2, 'F');
@@ -178,7 +178,7 @@
       });
       ty += 2;
     });
-    let by = 30; doc.setFontSize(9); doc.setFont('helvetica', 'bold'); doc.text('CDA bylaw check', colB, by); by += 5; doc.setFont('helvetica', 'normal'); doc.setFontSize(7.6);
+    let by = 30; doc.setFontSize(9); doc.setFont('helvetica', 'bold'); doc.text(`${R.auth || 'CDA'} bylaw check`, colB, by); by += 5; doc.setFont('helvetica', 'normal'); doc.setFontSize(7.6);
     p.checks.forEach(ch => {
       const col = ch.s === 'ok' ? [31, 122, 77] : ch.s === 'warn' ? [168, 106, 18] : [178, 58, 46];
       doc.setTextColor(...col); doc.setFont('helvetica', 'bold'); doc.text(ch.s === 'ok' ? 'PASS' : ch.s === 'warn' ? 'NOTE' : 'FAIL', colB, by);

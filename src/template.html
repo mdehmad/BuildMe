@@ -390,6 +390,76 @@ details.regs[open] summary::after{content:"–"}
 .pipeline p{margin:6px 0 0;font-size:13px}
 @media (prefers-reduced-motion:no-preference){.btn,.choice,.opt,.proj-card,.nav button{transition:background-color .15s,border-color .15s,box-shadow .15s}}
 
+
+/* location / authority */
+.loc-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:2px 4px}
+.loc-row select{max-width:340px;flex:1 1 220px}
+.auth-grid{display:flex;flex-direction:column;gap:8px}
+.auth-row{display:grid;grid-template-columns:140px minmax(0,1fr);gap:10px;align-items:start}
+.auth-row .lab{padding-top:9px}
+@media (max-width:600px){.auth-row{grid-template-columns:minmax(0,1fr);gap:4px}.auth-row .lab{padding-top:0}}
+.auth-chips{display:flex;flex-wrap:wrap;gap:6px}
+.auth-chip{display:inline-flex;align-items:baseline;gap:6px;border:1.5px solid var(--line);background:var(--surface);border-radius:99px;padding:6px 12px;cursor:pointer;font-size:13px;color:var(--ink-2)}
+.auth-chip b{font-family:var(--display);font-weight:600;color:var(--ink)}
+.auth-chip span{color:var(--muted);font-size:12px}
+.auth-chip:hover{border-color:var(--sky)}
+.auth-chip[aria-pressed="true"]{border-color:var(--primary);background:var(--primary-soft)}
+.auth-chip[aria-pressed="true"] b{color:var(--primary-2)}
+.auth-info{margin:0;font-size:13px;color:var(--ink-2)}
+.loc-chip{border:1px solid var(--sky-2);background:var(--primary-softer);color:var(--primary-2);border-radius:99px;padding:6px 12px;font:600 12.5px var(--body);cursor:pointer;white-space:nowrap;max-width:46vw;overflow:hidden;text-overflow:ellipsis}
+.loc-chip:hover{border-color:var(--primary)}
+@media (max-width:640px){.loc-chip{display:none}}
+.src-list{margin:0;padding:6px 12px 12px 28px;display:flex;flex-direction:column;gap:6px;font-size:13px}
+
+/* phases, lock, interiors */
+.phase{list-style:none;margin:0;padding:0;display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12.5px}
+.phase li{display:flex;align-items:center;gap:6px;color:var(--muted);font-weight:600}
+.phase li .n{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font:700 11px var(--body);background:var(--line-2);color:var(--muted)}
+.phase li.done .n{background:var(--good);color:#fff}
+.phase li.now{color:var(--ink)} .phase li.now .n{background:var(--primary);color:#fff}
+.phase li+li::before{content:"";width:22px;height:2px;background:var(--line);margin-right:2px}
+.lock-banner{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 14px;border-radius:12px;background:var(--good-soft);border:1px solid #bfe5d1}
+.lock-banner svg{width:22px;height:22px;stroke:var(--good);fill:none;stroke-width:2;flex:0 0 auto}
+.lock-banner div{flex:1;min-width:220px;display:flex;flex-direction:column}
+.lock-banner span{font-size:13px;color:var(--ink-2)}
+.int-theme{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--ink-2)}
+.int-theme select{width:auto}
+.int-grid{display:grid;grid-template-columns:minmax(0,0.9fr) minmax(0,1.1fr);gap:20px;align-items:start}
+@media (max-width:1150px){.int-grid{grid-template-columns:minmax(0,1fr)}}
+.int-plan,.int-room{padding:16px 18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.int-room{position:sticky;top:84px}
+@media (max-width:1150px){.int-room{position:static}}
+#int-plan .plan-svg{max-height:62vh}
+.int-rooms{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:6px}
+.int-rooms button{width:100%;display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:7px 10px;cursor:pointer;text-align:left;font-size:13px}
+.int-rooms button:hover{border-color:var(--sky)}
+.int-rooms button[aria-current="true"]{border-color:var(--primary);background:var(--primary-soft)}
+.int-rooms i{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+.int-rooms span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.int-rooms small{color:var(--muted);font-family:var(--mono);font-size:11px}
+.rm-tabs{flex-wrap:wrap;margin-bottom:8px}
+.rm-draw{border:1px solid var(--line);border-radius:12px;background:#fff;padding:10px;max-height:620px;overflow:auto}
+.rm-draw svg{width:100%;height:auto;max-height:560px;display:block}
+.rm-draw .el-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:640px){.rm-draw .el-grid{grid-template-columns:minmax(0,1fr)}}
+.rm-draw table{width:100%;border-collapse:collapse;font-size:12.5px}.rm-draw td,.rm-draw th{padding:5px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.rm-draw .num{text-align:right;white-space:nowrap}
+.rm-draw h4{margin:12px 0 6px;font-size:13px}.rm-draw .tot td{font-weight:700;color:var(--primary-2)}
+.rm-purpose{display:flex;gap:8px;align-items:center;font-size:13px;font-weight:600}
+.rm-checks{list-style:none;margin:0;padding:0;display:grid;gap:4px;font-size:12.5px}
+.rm-checks li{display:flex;gap:7px;align-items:flex-start}.rm-checks li i{width:8px;height:8px;border-radius:50%;margin-top:5px;flex:none}
+#rm-swap{max-width:170px;font-size:13px}
+.rm3d-stage{position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:#EEF3F9}
+.rm3d{width:100%;height:min(52vh,460px);min-height:280px}
+.rm3d canvas{display:block;cursor:grab}
+.rm-bar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.rm-sel{display:flex;flex-direction:column;gap:1px;min-width:0}
+.rm-fin{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+@media (max-width:640px){.rm-fin{grid-template-columns:minmax(0,1fr)}}
+.rm-fin .chips{margin-top:5px}
+.swatches{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px}
+.swatches button{width:28px;height:28px;border-radius:50%;border:2px solid var(--surface);box-shadow:0 0 0 1px var(--line);cursor:pointer}
+.swatches button[aria-pressed="true"]{box-shadow:0 0 0 2px var(--primary)}
+#rm-sched td,#rm-sched th{padding:6px 8px;font-size:12.5px}
 /* ===== Mimar (guide), quick answers, help page, pop-ups ===== */
 .mm{display:block;overflow:visible}
 .mm .mm-m,.mm .mm-sweat,.mm .mm-bulb,.mm .mm-q{display:none}
@@ -590,15 +660,16 @@ details.regs[open] summary::after{content:"–"}
       <button data-route="dashboard"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>Dashboard</button>
       <button data-route="new"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>New design</button>
       <button data-route="design" id="nav-design" hidden><svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V9l7-5 7 5v12"/><path d="M9 21v-6h6v6"/></svg>Current design</button>
+      <button data-route="interior" id="nav-interior" hidden><svg viewBox="0 0 24 24"><path d="M4 18v-6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6M2 18h20M6 10V7a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v3M6 18v2M18 18v2"/></svg>Interiors</button>
       <button data-route="projects"><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>My projects<span class="count" id="nav-count">0</span></button>
       <span class="sec">Tools</span>
       <button data-route="plots"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 12h18M12 3v18"/></svg>Plot sizes</button>
       <button data-route="cost"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M9 6h6M9 11h.01M12 11h.01M15 11h.01M9 15h.01M12 15h.01M15 15h.01M9 18h6"/></svg>Cost estimator</button>
-      <button data-route="bylaws"><svg viewBox="0 0 24 24"><path d="M4 4h12a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4z"/><path d="M8 9h8M8 13h6"/></svg>CDA bylaws</button>
+      <button data-route="bylaws"><svg viewBox="0 0 24 24"><path d="M4 4h12a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4z"/><path d="M8 9h8M8 13h6"/></svg>Bylaws</button>
       <span class="sec">Support</span>
       <button data-route="help"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .9-1 1.7M12 17h.01"/></svg>Help &amp; FAQ</button>
     </nav>
-    <div class="side-foot">Plans follow the CDA Islamabad residential bylaws. Concept designs — get an architect to prepare the drawings you submit for approval.</div>
+    <div class="side-foot">Plans follow the bylaws of your city or housing society. Concept designs — get an architect to prepare the drawings you submit for approval.</div>
   </aside>
   <div class="scrim" id="scrim" hidden></div>
 
@@ -607,6 +678,7 @@ details.regs[open] summary::after{content:"–"}
       <button class="menu-btn" id="menu-btn" aria-label="Open menu"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
       <div><h1 id="page-title">Dashboard</h1><div class="crumb" id="page-crumb"></div></div>
       <div class="grow"></div>
+      <button class="loc-chip" type="button" data-route="bylaws" id="loc-chip" title="Bylaws in use — change in New design or on the dashboard"></button>
       <button class="btn primary" data-route="new"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>New design</button>
     </header>
 
@@ -618,6 +690,7 @@ details.regs[open] summary::after{content:"–"}
           <h2 id="greet">What are we building today?</h2>
           <p>Describe the house in your own words. BuildMe picks out the plot size, rooms and preferences, then designs layouts that fit the CDA bylaws.</p>
           <div class="ask">
+            <div class="loc-row"><label for="ask-loc" class="lab">Plot location</label><select id="ask-loc" aria-label="Plot location and building authority"></select></div>
             <label for="ask-input" class="lab" style="padding:2px 4px 0">Describe your house</label>
             <textarea id="ask-input" rows="2" placeholder="e.g. 10 marla, 5 bedrooms, double storey, drawing room, road on the east, modern style"></textarea>
             <div class="row">
@@ -638,7 +711,7 @@ details.regs[open] summary::after{content:"–"}
           <div id="recent"></div>
         </div>
         <div class="card card-pad" style="display:flex;flex-direction:column;gap:14px">
-          <div><h2>What each plot can hold</h2><p class="sub">Maximum built area under CDA rules, in ft²</p></div>
+          <div><h2>What each plot can hold</h2><p class="sub" id="bars-sub">Maximum built area under CDA rules, in ft²</p></div>
           <div class="bars" id="plot-bars"></div>
           <div class="legend"><span><i style="background:var(--primary)"></i>Ground floor max</span><span><i style="background:var(--sky-2)"></i>Total (both floors) max</span></div>
         </div>
@@ -657,7 +730,13 @@ details.regs[open] summary::after{content:"–"}
       <div class="wiz">
         <ol class="steps" id="steps" aria-label="Progress"></ol>
         <div class="card card-q" data-step="0">
-          <div class="q-head"><h2>What size is your plot?</h2><p>Choose a standard CDA plot, or enter your own width and depth. Width is the side facing the road.</p></div>
+          <div class="q-head"><h2>Where is your plot, and what size?</h2><p>Your city or society decides the bylaws. BuildMe then fits every plan to them.</p></div>
+          <div class="q">
+            <span class="q-title">Location and building authority</span>
+            <div class="auth-grid" id="auth-choices" role="group" aria-label="Building authority"></div>
+            <p class="auth-info" id="auth-info"></p>
+          </div>
+          <div class="q-head" style="margin-top:4px"><h2 style="font-size:19px">Plot size</h2><p>Standard plots for this location, or enter your own width and depth. Width is the side facing the road.</p></div>
           <div class="q">
             <div class="choices" id="plot-choices"></div>
             <div class="inline-custom"><span class="hint">Other size:</span>
@@ -746,9 +825,12 @@ details.regs[open] summary::after{content:"–"}
         <div class="ws-actions">
           <button class="btn" id="change"><svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Change brief</button>
           <button class="btn" id="more-opts"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5"/></svg>New layouts</button>
+          <button class="btn soft" id="lock-btn"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Lock &amp; design interiors</button>
           <button class="btn primary" id="save-proj"><svg viewBox="0 0 24 24"><path d="M5 3h11l3 3v15H5z"/><path d="M8 3v5h8M8 21v-7h8v7"/></svg>Save project</button>
         </div>
       </div>
+      <ol class="phase" id="phase-d" aria-label="Project phases"></ol>
+      <div class="lock-banner" id="lock-banner" hidden><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><div><b>Design locked</b><span>The layout is frozen while you design the interiors. Unlock to change rooms; interior work on changed rooms is kept where the room stays the same.</span></div><button class="btn sm primary" data-route="interior">Open interiors</button><button class="btn sm" id="unlock-btn">Unlock</button></div>
       <p class="notes" id="notes" hidden></p>
       <div><span class="lab">Layouts that fit</span><div class="opts" id="opts" style="margin-top:8px"></div></div>
 
@@ -835,6 +917,53 @@ details.regs[open] summary::after{content:"–"}
       </div>
     </section>
 
+    <!-- ===================== INTERIORS ===================== -->
+    <section class="page" data-view="interior" hidden>
+      <ol class="phase" id="phase-i" aria-label="Project phases"></ol>
+      <div class="ws-head">
+        <div class="ws-title"><h2 style="font-size:22px">Interior design</h2><span class="sub" id="int-sub"></span></div>
+        <div class="ws-actions">
+          <label class="int-theme">Theme <select id="int-theme" aria-label="Interior theme"></select></label>
+          <button class="btn" id="int-auto"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5"/></svg>Re-furnish untouched rooms</button>
+          <button class="btn" id="int-pdf"><svg viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg>PDF only</button>
+          <button class="btn primary" id="int-pkg"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Download design package</button>
+        </div>
+      </div>
+      <p class="msg" id="int-status" role="status"></p>
+      <div class="int-grid">
+        <div class="card int-plan">
+          <div class="row between"><div class="floor-tabs" role="tablist" id="int-floors" aria-label="Floor"></div>
+            <div class="legend"><span><i style="background:#16865A"></i>Done</span><span><i style="background:#1E6FD9"></i>Edited</span><span><i style="background:#B9C7D6"></i>Auto</span></div></div>
+          <div id="int-plan"></div>
+          <p class="hint">Click a room on the plan or in the list to open it in 3D.</p>
+          <ul class="int-rooms" id="int-rooms"></ul>
+        </div>
+        <div class="card int-room">
+          <div class="row between"><div style="min-width:0"><h3 id="rm-title">Pick a room</h3><span class="sub" id="rm-sub"></span></div>
+            <div class="seg" id="rm-views" role="group" aria-label="Camera"><button data-v="corner" aria-selected="true">3D</button><button data-v="eye" title="Stand inside the room at eye level">Walk-in</button><button data-v="top">Top</button><button data-v="front">Front</button></div></div>
+          <div class="seg rm-tabs" id="rm-tabs" role="tablist" aria-label="Room views"><button role="tab" data-t="3d" aria-selected="true">3D</button><button role="tab" data-t="plan">Plan</button><button role="tab" data-t="elev">Elevations</button><button role="tab" data-t="rcp">Ceiling &amp; lights</button><button role="tab" data-t="elec">Electrical</button><button role="tab" data-t="floor">Flooring</button><button role="tab" data-t="boq">Specs &amp; BOQ</button></div>
+          <div class="rm3d-stage" id="rm-stage"><div id="rm3d" class="rm3d"></div><p class="m3d-status" id="rm-status">Drag furniture to move it. Click to select.</p></div>
+          <div class="rm-draw" id="rm-draw" hidden></div>
+          <div class="rm-bar" id="rm-purpose-row" hidden><label class="rm-purpose">Room purpose <select id="rm-role" aria-label="Room purpose"></select></label><span class="hint">Changing the purpose re-plans the furniture.</span></div>
+          <ul class="rm-checks" id="rm-checks" aria-label="Space planning checks"></ul>
+          <div class="rm-bar">
+            <div class="rm-sel"><span class="lab">Selected</span><b id="rm-selname">Nothing selected</b></div>
+            <div class="editbar"><select id="rm-swap" aria-label="Swap for another style" disabled><option>Swap style…</option></select><button class="btn sm" id="rm-rot" disabled>Rotate 90°</button><button class="btn sm" id="rm-dup" disabled>Duplicate</button><button class="btn sm danger" id="rm-del" disabled>Remove</button></div>
+          </div>
+          <div class="rm-bar">
+            <div class="addrow" style="flex:1;min-width:220px"><select id="rm-add" aria-label="Furniture to add"></select><button class="btn sm soft" id="rm-addgo">Add</button></div>
+            <div class="editbar"><button class="btn sm" id="rm-auto">Auto layout</button><button class="btn sm primary" id="rm-done">Mark room done</button></div>
+          </div>
+          <div class="rm-fin">
+            <div><span class="lab">Floor</span><div class="chips" id="rm-floor" role="group" aria-label="Floor finish"></div></div>
+            <div><span class="lab">Walls</span><div class="swatches" id="rm-wall" role="group" aria-label="Wall colour"></div></div>
+          </div>
+          <div class="tbl-wrap"><table id="rm-sched"></table></div>
+          <p class="hint" id="rm-budget"></p>
+        </div>
+      </div>
+    </section>
+
     <!-- ===================== PROJECTS ===================== -->
     <section class="page" data-view="projects" hidden>
       <div class="toolbar"><input type="text" id="proj-search" placeholder="Search projects" aria-label="Search projects"><div class="grow" style="flex:1"></div><button class="btn primary" data-route="new">New design</button></div>
@@ -845,7 +974,7 @@ details.regs[open] summary::after{content:"–"}
 
     <!-- ===================== PLOT SIZES ===================== -->
     <section class="page" data-view="plots" hidden>
-      <div class="row between"><div><h2 style="font-size:20px">Every standard plot, one plan each</h2><p class="sub">Best suggestion for each CDA plot with typical answers. Pick one to start designing.</p></div><button class="btn" id="cat-regen">Suggest again</button></div>
+      <div class="row between"><div><h2 style="font-size:20px">Every standard plot, one plan each</h2><p class="sub" id="cat-sub">Best suggestion for each standard plot with typical answers. Pick one to start designing.</p></div><button class="btn" id="cat-regen">Suggest again</button></div>
       <div class="cat-grid" id="cat-grid"></div>
       <div class="dash-help" id="quick-plots"></div>
     </section>
@@ -876,8 +1005,15 @@ details.regs[open] summary::after{content:"–"}
     <!-- ===================== BYLAWS ===================== -->
     <section class="page" data-view="bylaws" hidden>
       <div class="page-split">
+      <div style="display:flex;flex-direction:column;gap:20px;min-width:0">
+      <div class="card card-pad" style="display:flex;flex-direction:column;gap:12px">
+        <div class="row between"><div><h2>Rules by location</h2><p class="sub">Setbacks, coverage and FAR BuildMe applies for each standard plot</p></div><select id="bl-auth" aria-label="Building authority" style="max-width:320px"></select></div>
+        <div class="tbl-wrap"><table id="bl-table"></table></div>
+        <p class="hint" id="bl-src"></p>
+        <details class="regs"><summary>All authorities and sources</summary><ul class="src-list" id="bl-all"></ul></details>
+      </div>
       <div class="card card-pad prose">
-        <h2>How BuildMe follows CDA bylaws</h2>
+        <h2>How BuildMe follows CDA bylaws (Islamabad)</h2>
         <p>BuildMe is a rule-based assistant. Every plan is built from an editable scheme: the rooms in each row, front to back, and how deep each row is. The same scheme always gives the same plan. Suggestions come from searching many schemes and keeping the best; after that, you're in control.</p>
         <div class="pipeline">
           <div><b>Envelope</b><small>Schedule A</small><p>Plot minus front, rear and side setbacks, then capped by maximum ground coverage.</p></div>
@@ -900,6 +1036,7 @@ details.regs[open] summary::after{content:"–"}
         <p>These are the CDA 1993 regulations as published on cda.gov.pk, plus current rear-setback practice. Later amendments and society bylaws (DHA, Bahria, B-17 and others) may differ: use "My society has different bylaws" on the review step. A licensed architect should prepare drawings for approval.</p>
         <p class="hint">Source: <a href="https://www.cda.gov.pk/public/Assets/pdf/1699885249_b05cb0e0_abed_43cf_8916_685822960e8d_.pdf" target="_blank" rel="noopener">CDA Residential Sectors Zoning (Building Control) Regulation 1993 (PDF)</a></p>
       </div>
+      </div>
       <aside id="quick-bylaws" aria-label="Quick answers"></aside>
       </div>
     </section>
@@ -917,6 +1054,9 @@ details.regs[open] summary::after{content:"–"}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
+/*AUTH*/
+</script>
+<script>
 /*ENGINE*/
 </script>
 <script>
@@ -927,6 +1067,15 @@ details.regs[open] summary::after{content:"–"}
 </script>
 <script>
 /*EXPORT*/
+</script>
+<script>
+/*INTERIOR*/
+</script>
+<script>
+/*DETAIL*/
+</script>
+<script>
+/*INTERIOR3D*/
 </script>
 <script>
 /*HELP*/

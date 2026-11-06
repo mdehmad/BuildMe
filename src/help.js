@@ -18,7 +18,7 @@
     ['25 × 40', '4 Marla', 1, 3], ['25 × 50', '5 Marla', 2, 5], ['30 × 60', '8 Marla', 3, 7], ['35 × 70', '10 Marla', 3, 7],
     ['40 × 80', '14 Marla', 5, '8+'], ['50 × 90', '1 Kanal', 5, '8+'], ['50 × 100', '1 Kanal+', 4, '8+'], ['60 × 120', '1.6 Kanal', '8+', '8+'], ['75 × 120', '2 Kanal', '8+', '8+'],
   ];
-  const fitsTable = () => `<div class="tbl-wrap"><table class="faq-tbl"><thead><tr><th>Plot</th><th class="num">Single storey</th><th class="num">Double storey</th></tr></thead><tbody>${FITS.map(r => `<tr><td>${r[0]} <span class="hint">${r[1]}</span></td><td class="num">${r[2]}</td><td class="num">${r[3]}</td></tr>`).join('')}</tbody></table></div><p class="hint">Bedrooms with attached baths, plus lounge, kitchen, stairs and a car porch, within CDA coverage and FAR.</p>`;
+  const fitsTable = () => `<div class="tbl-wrap"><table class="faq-tbl"><thead><tr><th>Plot</th><th class="num">Single storey</th><th class="num">Double storey</th></tr></thead><tbody>${FITS.map(r => `<tr><td>${r[0]} <span class="hint">${r[1]}</span></td><td class="num">${r[2]}</td><td class="num">${r[3]}</td></tr>`).join('')}</tbody></table></div><p class="hint">Islamabad (CDA) plots: bedrooms with attached baths, plus lounge, kitchen, stairs and a car porch, within coverage and FAR. Other authorities with higher coverage fit more.</p>`;
 
   const FAQ = [
     // ---- when a plan won't fit
@@ -43,6 +43,26 @@
       q: 'Why does my kitchen open from the porch?',
       a: 'On very tight plots, the only way to give every room a door is sometimes a kitchen door from the porch. That’s common on 4–5 marla houses. Pick another layout, or remove a room, to get a separate entrance hall.' },
 
+    // ---- location & authorities
+    { id: 'authorities', cat: 'bylaws', screens: ['new', 'bylaws', 'dashboard', 'help'], tip: 'Pick your city or society first — CDA, LDA, RDA, SBCA, PDA, QDA, DHA or Bahria — and every plan follows its bylaws.',
+      q: 'Which cities and housing societies does BuildMe cover?',
+      a: 'Islamabad (CDA), Rawalpindi (RDA), Lahore (LDA), Faisalabad (FDA), Gujranwala (GDA), Multan (MDA), other Punjab towns and private schemes (TMA, LDA-style tables), Karachi (SBCA / KB&TPR 2002), Peshawar and KP (PDA / KP Model Building Bye-laws 2017), Quetta and Balochistan (QDA / 2022 rules), DHA Islamabad–Rawalpindi, DHA Lahore, DHA Karachi, and Bahria Town Rawalpindi–Islamabad, Lahore and Karachi. Each rule set is marked <b>official</b>, <b>secondary</b> or <b>assumed</b> on the Bylaws page, with its source.' },
+    { id: 'location', cat: 'bylaws', screens: ['new', 'design'], tip: 'Changing the location re-checks your plot: setbacks, coverage, FAR and porch rules all switch to that authority.',
+      q: 'What changes when I pick a different location?',
+      a: 'Front, rear and side setbacks, maximum ground coverage, FAR (or the first-floor share, in DHA Lahore), the mumty limit, porch rules and the list of standard plot sizes. Plans are redesigned to the new rules and the Bylaw check names the authority and band used. BuildMe still designs up to two storeys, even where an authority allows more.' },
+    { id: 'confidence', cat: 'bylaws', screens: ['bylaws'], tip: '“Official” rules come from the published regulation; “secondary” and “assumed” ones should be confirmed with the authority.',
+      q: 'How reliable are the rules for my city?',
+      a: '<b>Official</b>: read from the published regulation (CDA, LDA, FDA, GDA, SBCA, KP, Balochistan, DHA Lahore, DHA Karachi). <b>Secondary</b>: from reputable summaries because the society doesn\u2019t publish its bylaws online (RDA adoption, DHA Islamabad–Rawalpindi, Bahria Town). <b>Assumed</b>: MDA and Punjab TMAs, which follow LDA tables in practice. Always confirm with the building control office before submitting drawings.' },
+    // ---- interiors
+    { id: 'interiors', cat: 'design', screens: ['design', 'interior'], tip: 'Happy with a layout? Lock it, then furnish every room in 3D.',
+      q: 'How do I design the interiors?',
+      a: 'In the workspace press <b>Lock &amp; design interiors</b>. Every room is furnished automatically to start. Pick a room on the plan to open it in 3D: drag furniture to move it, rotate or remove the selected piece, add furniture from the list, and choose the floor finish and wall colour. Mark each room done as you go.' },
+    { id: 'package', cat: 'files', screens: ['interior'], tip: 'The design package covers every room — the ones you designed and the ones I furnished automatically.',
+      q: 'What\u2019s in the interior design package?',
+      a: 'A PDF with a cover and budget, the furnished floor plans, and one page per room: a scaled furniture plan, a 3D view, the floor finish and wall colour, a furniture schedule with sizes and 2026 PKR price ranges, and the room budget. Rooms you didn\u2019t edit are included with BuildMe\u2019s automatic layout. The ZIP adds every image, a furnished 3D model of the house (GLB) and the room data as JSON.' },
+    { id: 'move3d', cat: 'design', screens: ['interior'], tip: 'In the 3D room, drag a piece to move it, press R to rotate, Delete to remove.',
+      q: 'How do I move furniture in 3D?',
+      a: 'Click a piece to select it (a blue box appears; red means it overlaps something or sits outside the room). Drag it across the floor; it snaps to 3-inch steps and stays inside the room. Use <b>Rotate 90°</b>, <b>Duplicate</b> or <b>Remove</b>, or press R and Delete. Drag empty space to orbit the camera, scroll to zoom, or pick 3D, Top or Front.' },
     // ---- plots
     { id: 'sizes', cat: 'plots', screens: ['dashboard', 'new', 'plots'], tip: 'Every standard CDA plot is ready to go, from 4 marla to 2 kanal — or type your own size.',
       q: 'Which plot sizes does BuildMe support?',
@@ -214,6 +234,7 @@
     cost: 'Let’s put a number on it. Change the area and finish to see the range.',
     bylaws: 'These are the rules I follow for every plan.',
     help: 'Search below, or tap me for a random tip.',
+    interior: 'Pick a room on the plan — I\u2019ve furnished it to start. Drag furniture in 3D.',
   };
   function mountGuide() {
     if (G.el) return G.el;
@@ -279,6 +300,7 @@
   }
   function next() {
     if (!G.deck.length) G.deck = shuffle(forScreen(G.screen)).filter(f => !G.cur || f.id !== G.cur.id);
+    if (!G.deck.length) G.deck = shuffle(FAQ);
     show(G.deck.shift());
   }
   function schedule() {
